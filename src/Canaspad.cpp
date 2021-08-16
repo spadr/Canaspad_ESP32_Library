@@ -35,14 +35,13 @@ Canaspad::Canaspad()
 
 bool
 Canaspad::begin(const char ssid[], const char password[],int UTC_offset,const char* api_username, const char* api_password) {
-  Serial.println("------------------------------");
   WiFi.begin(ssid, password);
   Serial.print("WiFi connecting");
   while (WiFi.status() != WL_CONNECTED) {
     delay(100);
     Serial.print(".");
   }
-  Serial.println("");
+  Serial.println("OK");
   dif_UTC = UTC_offset;
   if(not getapitime()){
     return false;
@@ -74,13 +73,9 @@ Canaspad::set(String device_name, String device_channel, String device_type, int
   json_send += "}";
   String token = postset(json_send);
   if (httpCode == 201) { //Check for the returning code
-    Serial.println("SETTING OK");
-    Serial.println("------------------------------");
     return token;
     }
   else {
-    Serial.println("SETTING NG");
-    Serial.println("------------------------------");
     return "Nan";
     }
 }
@@ -97,9 +92,6 @@ Canaspad::send(){
     json_content = "";
     packet_cnt = 0;
     json_flag = false;
-    Serial.println("Send OK");
-    Serial.println("Clear Data");
-    Serial.println("------------------------------");
     return true;
     }
   else {
@@ -107,10 +99,7 @@ Canaspad::send(){
       json_content = "";
       packet_cnt = 0;
       json_flag = false;
-      Serial.println("Clear Data");
     }
-    Serial.println("Send NG");
-    Serial.println("------------------------------");
     return false;
     }
 }
@@ -175,11 +164,6 @@ Canaspad::add(String value, String token){
   json_flag = true;
   json_content += content;
   packet_cnt += 1;
-  Serial.print("Add Data : ");
-  Serial.println(content);
-  Serial.print("Add Counter : ");
-  Serial.println(packet_cnt);
-  Serial.println("------------------------------");
 }
 
 bool
@@ -187,28 +171,18 @@ Canaspad::getapitime(){
   HTTPClient http;
   StaticJsonDocument<512> time_doc;
   String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_DATA;
-  Serial.print("Request URL : ");
-  Serial.println(url);
   http.begin(url);
   httpCode = http.GET();
-  Serial.print("Status Code : ");
-  Serial.println(httpCode);
   if (httpCode == 200) {
     payload = http.getString();
     deserializeJson(time_doc, payload);
     int returned = time_doc["time"];
     startup = returned - millis()/1000;
     http.end();
-    Serial.print("Now : ");
-    Serial.println(startup);
-    Serial.println("API Connection OK");
-    Serial.println("------------------------------");
     return true;
     }
   else {
     http.end();
-    Serial.println("API Connection NG");
-    Serial.println("------------------------------");
     return false;
     }
 }
@@ -223,10 +197,6 @@ Canaspad::getapiauth(){
   auth_json += json_format("password", String(apipassword), false);
   auth_json += "}";
   String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_AUTH;
-  Serial.print("Request URL : ");
-  Serial.println(url);
-  Serial.print("POST Payload: ");
-  Serial.println(auth_json);
   http.begin(url);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(auth_json);
@@ -238,18 +208,10 @@ Canaspad::getapiauth(){
     refresh_token = String(buf1);
     access_token = String(buf2);
     http.end();
-    Serial.print("Refresh Token: ");
-    Serial.println(refresh_token);
-    Serial.print("Access Token: ");
-    Serial.println(access_token);
-    Serial.println("Auth Connection OK");
-    Serial.println("------------------------------");
     return true;
     }
   else {
     http.end();
-    Serial.println("Auth Connection NG");
-    Serial.println("------------------------------");
     return false;
     }
 }
@@ -262,8 +224,6 @@ Canaspad::getapirefresh(){
   refresh_send += json_format("refresh", refresh_token, false);
   refresh_send += "}";
   String refresh_url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_REFRESH;
-  Serial.print("Request URL : ");
-  Serial.println(refresh_url);
   http.begin(refresh_url);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(refresh_send);
@@ -273,16 +233,10 @@ Canaspad::getapirefresh(){
     const char* buf = refresh_doc["access"];
     access_token = String(buf);
     http.end();
-    Serial.print("Access Token: ");
-    Serial.println(access_token);
-    Serial.println("Refresh Connection OK");
-    Serial.println("------------------------------");
     return true;
     }
   else {
     http.end(); 
-    Serial.println("Refresh Connection NG THEN");
-    Serial.println("------------------------------");
     return getapiauth();
     }
 }
@@ -291,8 +245,6 @@ int
 Canaspad::postdata(String json_send){
   HTTPClient http;
   String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_DATA;
-  Serial.print("Send URL : ");
-  Serial.println(url);
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
@@ -300,17 +252,11 @@ Canaspad::postdata(String json_send){
   httpCode = http.POST(json_send);
   payload = http.getString();
   http.end();
-  Serial.print("Send Data: ");
-  Serial.println(json_send);
-  Serial.println(httpCode);
-  Serial.println(now);
   if (httpCode == 201) { //Check for the returning code
     StaticJsonDocument<512> time_doc2;
     deserializeJson(time_doc2, payload);
     int returned = time_doc2["time"];
     time_offset = returned - now;
-    Serial.print("Time Offset: ");
-    Serial.println(time_offset);
   }
   return httpCode;
 }
@@ -319,8 +265,6 @@ String
 Canaspad::postset(String json_send){
   HTTPClient http;
   String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_SET;
-  Serial.print("Send URL : ");
-  Serial.println(url);
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
@@ -328,18 +272,12 @@ Canaspad::postset(String json_send){
   httpCode = http.POST(json_send);
   payload = http.getString();
   http.end();
-  Serial.print("Send Data: ");
-  Serial.println(json_send);
-  Serial.println(httpCode);
-  Serial.println(now);
   String return_data;
   if (httpCode == 201) { //Check for the returning code
     StaticJsonDocument<1024> set_doc;
     deserializeJson(set_doc, payload);
     const char* buf = set_doc["device_token"];
     return_data = String(buf);
-    Serial.print("device_token: ");
-    Serial.println(return_data);
   }
   return return_data;
 }
@@ -356,23 +294,13 @@ Canaspad::get(String token){
   if (httpCode == 200) {
     deserializeJson(return_doc, payload);
     float return_data  = return_doc[0]["fields"]["data"];
-    Serial.print("Return Data: ");
-    Serial.println(return_data);
-    Serial.println("GET Data Connection OK");
-    Serial.println("------------------------------");
     return return_data;
     }
   else {
-    Serial.println("GET Data Connection NG THEN");
-    Serial.println("------------------------------");
     getapiauth();
     getdata(json_send);
     deserializeJson(return_doc, payload);
     float return_data  = return_doc[0]["fields"]["data"];
-    Serial.print("Return Data: ");
-    Serial.println(return_data);
-    Serial.println("GET Data Connection OK");
-    Serial.println("------------------------------");
     return return_data;
     }
 }
@@ -382,17 +310,10 @@ void
 Canaspad::getdata(String json_send){
   HTTPClient http;
   String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_RECEIVE;
-  Serial.print("Send URL : ");
-  Serial.println(url);
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(json_send);
   payload = http.getString();
   http.end();
-  Serial.print("Send Data: ");
-  Serial.println(json_send);
-  Serial.println(httpCode);
-  Serial.println(payload);
-  Serial.println("------------------------------");
 }

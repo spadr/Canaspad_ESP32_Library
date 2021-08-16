@@ -19,6 +19,7 @@ public:
   bool add(String value, String token);
   float get(String token);
   void getdata(String json_send);
+  int32_t image_post( uint8_t * ui8BufJpg, uint32_t iNumDat );
   String gettime();
   unsigned long gettimestamp();
   String payload;
