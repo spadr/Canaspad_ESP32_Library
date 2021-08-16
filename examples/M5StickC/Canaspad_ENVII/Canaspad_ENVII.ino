@@ -67,10 +67,10 @@ void loop() {
     Serial.printf("Pressure: %0.2fhPa  Humidity Deficit: %0.2fg/m^2%\r\n", pressure, housa);
 
     //Add the measured values to JSON
-    api.add(String(tmp), sensor_tmp);
-    api.add(String(hum), sensor_hum);
-    api.add(String(pressure), sensor_press);
-    api.add(String(housa), sensor_housa);
+    api.add(tmp, sensor_tmp);
+    api.add(hum, sensor_hum);
+    api.add(pressure, sensor_press);
+    api.add(housa, sensor_housa);
 
     //Send JSON to API
     if (api.send()) { 

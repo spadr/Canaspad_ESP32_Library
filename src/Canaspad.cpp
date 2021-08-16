@@ -148,8 +148,24 @@ Canaspad::json_format(String label, String value, bool is_list){
   return json_;
 }
 
-bool
+void
 Canaspad::add(String value, String token){
+  add_(value, token);
+}
+
+void
+Canaspad::add(int value, String token){
+  add_(String(value), token);
+}
+
+void
+Canaspad::add(float value, String token){
+  add_(String(value), token);
+}
+
+
+void
+Canaspad::add_(String value, String token){
   String content = "";
   content += "{";
   content += json_format("device_token", token, false);

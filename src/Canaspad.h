@@ -16,7 +16,9 @@ public:
   bool begin(const char ssid[], const char password[],int UTC_offset, const char* api_username, const char* api_password);
   String set(String device_name, String device_channel, String device_type, int interval, bool monitoring);
   bool send();
-  bool add(String value, String token);
+  void add(String value, String token);
+  void add(int value, String token);
+  void add(float value, String token);
   float get(String token);
   void getdata(String json_send);
   int32_t image_post( uint8_t * ui8BufJpg, uint32_t iNumDat );
@@ -39,6 +41,7 @@ private:
   String postset(String json_send);
   const char* apiusername;
   const char* apipassword;
+  void add_(String value, String token);
 };
 
 #endif // Canaspad_h
