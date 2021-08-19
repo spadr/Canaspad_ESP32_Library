@@ -5,7 +5,7 @@
 
 #include "Canaspad.h"
 
-const char* CANASPAD_HOST  = "192.168.10.117";
+const char* CANASPAD_HOST  = "iot.canaspad.com";
 
 int httpCode;
 String payload;
