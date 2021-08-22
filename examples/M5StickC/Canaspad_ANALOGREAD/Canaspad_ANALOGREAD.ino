@@ -34,9 +34,9 @@ void loop() {
     Serial.println("---------------------------------------------");
 
     //Get the measured value
-    vol = (analogRead(PIN) + 1) * 3.3 / (4095 + 1);
+    vol = (analogRead(PIN) + 1) * 3.3 *1000 / (4095 + 1);
     
-    Serial.printf("Voltage: %2.2fV\r\n", vol);
+    Serial.printf("Voltage: %2.2fmV\r\n", vol);
 
     //Add the measured values to JSON
     api.add(vol, sensor_vol);

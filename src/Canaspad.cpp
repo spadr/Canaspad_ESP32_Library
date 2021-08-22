@@ -5,7 +5,7 @@
 
 #include "Canaspad.h"
 
-const char* CANASPAD_HOST  = "192.168.10.117";
+const char* CANASPAD_HOST  = "iot.canaspad.com";
 
 int httpCode;
 String payload;
@@ -208,7 +208,7 @@ Canaspad::getapiauth(){
   HTTPClient http;
   StaticJsonDocument<2048> auth_doc;
   String auth_json = "{";
-  auth_json += json_format("username", String(apiusername), false);
+  auth_json += json_format("email", String(apiusername), false);
   auth_json += ",";
   auth_json += json_format("password", String(apipassword), false);
   auth_json += "}";

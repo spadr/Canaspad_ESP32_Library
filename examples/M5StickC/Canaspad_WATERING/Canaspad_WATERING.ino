@@ -38,7 +38,7 @@ void setup() {
 }
 
 void loop() {
-  if (api.gettimestamp() % 60*60 == 0){// interval
+  if (api.gettimestamp() % 60 == 0){// interval
     Serial.println();
     Serial.println("---------------------------------------------");
 
@@ -51,7 +51,7 @@ void loop() {
           adc = adc / 5;
     
     vol = (adc + 1) * 3.3 / (4095 + 1);//0-3.3V,12bit(0-4095)
-    moisture  = 100 * (1.6 - vol) / (1.6 - 1.2);//100 * (dry_voltage - now_voltage) / (dry_voltage - full_of_water_voltage)
+    moisture  = 100 * (1.65 - vol) / (1.65 - 1.2);//100 * (dry_voltage - now_voltage) / (dry_voltage - full_of_water_voltage)
     
     Serial.printf("Voltage: %2.2fV  Moisture: %0.2f%%\r\n", vol, moisture);
 
@@ -83,7 +83,7 @@ void loop() {
       Serial.println("Needs watering");
       
       digitalWrite(PUMP_PIN,HIGH);
-      delay(1000*30);//pump discharge:8.3 ml/s (without height difference)
+      delay(1000*1);//pump discharge:8.3 ml/s (without height difference)
       digitalWrite(PUMP_PIN,LOW);
     }
     

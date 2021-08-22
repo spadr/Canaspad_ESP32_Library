@@ -3,11 +3,12 @@
 #include "ADS1100.h"
 
 
+
 const char  ssid[]       = "WiFi_ssid";
 const char  password[]   = "WiFi_pass";
 const char* api_username = "user@mail.com";
 const char* api_password = "password";
-const int PIN            = 36;
+
 
 Canaspad api;
 ADS1100 ads;
@@ -29,7 +30,7 @@ void setup() {
     Serial.println("Api Connection Faild");
     Serial.println(api.httpCode);
   }
-
+  
   ads.getAddr_ADS1100(ADS1100_DEFAULT_ADDRESS);
   ads.setGain(GAIN_ONE);
   ads.setMode(MODE_CONTIN);
@@ -43,14 +44,24 @@ void setup() {
 
 void loop() {
   if (api.gettimestamp() % 60 == 0){//60-second interval
+    //Get the measured value
     Serial.println();
     Serial.println("---------------------------------------------");
-
-    //Get the measured value
-    vol = measure();
+    int8_t address;
+    address = ads.ads_i2cAddress;
+    Wire.beginTransmission(address);
+    byte error = Wire.endTransmission();
     
-    Serial.printf("Voltage: %2.2fV\r\n", vol);
+    if (error == 0){
+      int16_t result = ads.Measure_Differential();
+      float vol = result * ADC_BASE * 4 * 1000;
+      Serial.printf("Voltage: %2.2fmV\r\n", vol);
+    }else{
+      String vol = "nan";
+      Serial.println("ADS1100 Disconnected!");
+    }
 
+    
     //Add the measured values to JSON
     api.add(vol, sensor_vol);
 
@@ -69,40 +80,8 @@ void loop() {
     //Getting values from API
     float res_vol =  api.get(sensor_vol);
     
-    Serial.printf("Voltage: %2.2fV(Received from the API)\r\n", res_vol);
+    Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", res_vol);
     Serial.println("---------------------------------------------");
     delay(10*1000);
   }
-}
-
-float measure(){
-    byte error;
-    int8_t address;
-    address = ads.ads_i2cAddress;
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
-    if (error == 0)
-    {
-        int16_t result;
-        float temp,vol;
-        Serial.println("Getting Differential Reading from ADS1100");
-        Serial.println(" ");
-        result = ads.Measure_Differential();
-        Serial.print("Digital Value of Analog Input between Channel 0 and 1: ");
-        Serial.println(result);
-        temp = result * ADC_BASE * 4;
-        vol = temp *1000;
-        Serial.println(" ");
-        Serial.println("        ***************************        ");
-        Serial.println(" ");
-        return vol;
-    }
-    else
-    {
-        Serial.println("ADS1100 Disconnected!");
-        Serial.println(" ");
-        Serial.println("        ************        ");
-        Serial.println(" ");
-        return 1/0;
-    }
 }

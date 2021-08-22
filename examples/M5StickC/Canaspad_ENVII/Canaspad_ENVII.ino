@@ -4,12 +4,10 @@
 #include <Adafruit_BMP280.h>
 #include "SHT3X.h"
 
-
 const char  ssid[]       = "WiFi_ssid";
 const char  password[]   = "WiFi_pass";
 const char* api_username = "user@mail.com";
 const char* api_password = "password";
-
 
 Canaspad api;
 SHT3X sht30;
