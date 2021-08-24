@@ -5,7 +5,7 @@
 
 #include "Canaspad.h"
 
-const char* CANASPAD_HOST  = "iot.canaspad.com";
+String CANASPAD_HOST  = "iot.canaspad.com";
 
 int httpCode;
 String payload;
@@ -31,7 +31,10 @@ Canaspad::Canaspad()
 {
 
 }
-
+void
+Canaspad::domain(String domain) {
+  CANASPAD_HOST = domain;
+}
 
 bool
 Canaspad::begin(const char ssid[], const char password[],int UTC_offset,const char* api_username, const char* api_password) {
@@ -186,7 +189,7 @@ bool
 Canaspad::getapitime(){
   HTTPClient http;
   StaticJsonDocument<512> time_doc;
-  String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_DATA;
+  String url = "http://" + CANASPAD_HOST + ENDPOINTS_DATA;
   http.begin(url);
   httpCode = http.GET();
   if (httpCode == 200) {
@@ -212,7 +215,7 @@ Canaspad::getapiauth(){
   auth_json += ",";
   auth_json += json_format("password", String(apipassword), false);
   auth_json += "}";
-  String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_AUTH;
+  String url = "http://" + CANASPAD_HOST + ENDPOINTS_AUTH;
   http.begin(url);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(auth_json);
@@ -239,7 +242,7 @@ Canaspad::getapirefresh(){
   String refresh_send = "{";
   refresh_send += json_format("refresh", refresh_token, false);
   refresh_send += "}";
-  String refresh_url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_REFRESH;
+  String refresh_url = "http://" + CANASPAD_HOST + ENDPOINTS_REFRESH;
   http.begin(refresh_url);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(refresh_send);
@@ -260,7 +263,7 @@ Canaspad::getapirefresh(){
 int
 Canaspad::postdata(String json_send){
   HTTPClient http;
-  String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_DATA;
+  String url = "http://" + CANASPAD_HOST + ENDPOINTS_DATA;
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
@@ -280,7 +283,7 @@ Canaspad::postdata(String json_send){
 String
 Canaspad::postset(String json_send){
   HTTPClient http;
-  String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_SET;
+  String url = "http://" + CANASPAD_HOST + ENDPOINTS_SET;
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
@@ -325,7 +328,7 @@ Canaspad::get(String token){
 void
 Canaspad::getdata(String json_send){
   HTTPClient http;
-  String url = "http://" + String(CANASPAD_HOST) + ENDPOINTS_RECEIVE;
+  String url = "http://" + CANASPAD_HOST + ENDPOINTS_RECEIVE;
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
