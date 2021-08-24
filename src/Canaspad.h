@@ -13,6 +13,7 @@
 class Canaspad {
 public:
   Canaspad();
+  void domain(String domain);
   bool begin(const char ssid[], const char password[],int UTC_offset, const char* api_username, const char* api_password);
   String set(String device_name, String device_channel, String device_type, int interval, bool monitoring);
   bool send();
