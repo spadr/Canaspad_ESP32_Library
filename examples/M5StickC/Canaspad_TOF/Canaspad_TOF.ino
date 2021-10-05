@@ -7,7 +7,7 @@ const char  password[]   = "WiFi_pass";
 const char* api_username = "user@mail.com";
 const char* api_password = "password";
 
-unsigned long interval = 60*30;//Seconds(s)
+unsigned long interval = 60*5;//Seconds(s)
 
 Canaspad api;
 VL53L0X tof;
