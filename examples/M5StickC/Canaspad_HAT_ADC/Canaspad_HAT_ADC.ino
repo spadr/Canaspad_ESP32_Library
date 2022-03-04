@@ -39,7 +39,7 @@ void setup() {
   ads.begin();
   
   //Get the token
-  sensor_vol   = api.set("vol",  "analog", "number", 3, true);
+  sensor_vol   = api.set("vol",  "analog", "number");
 }
 
 void loop() {
@@ -78,7 +78,7 @@ void loop() {
       }
 
     //Getting values from API
-    float res_vol =  api.get(sensor_vol);
+    float res_vol =  api.get_float(sensor_vol);
     
     Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", res_vol);
     Serial.println("---------------------------------------------");

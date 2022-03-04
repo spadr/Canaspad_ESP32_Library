@@ -32,8 +32,8 @@ void setup() {
   pinMode(PUMP_PIN,OUTPUT);
   
   //Get the uuid
-  sensor_moisture   = api.set("moisture",  "watering", "number", 3, true);
-  //control_threshold   = api.set("moisture",  "control", "number", 3, true);//You can also fetch the thresholds recorded in the cloud.
+  sensor_moisture   = api.set("moisture",  "watering", "number");
+  //control_threshold   = api.set("moisture",  "control", "number");//You can also fetch the thresholds recorded in the cloud.
   
 }
 
@@ -50,10 +50,10 @@ void loop() {
           adc += analogRead(INPUT_PIN);
           adc = adc / 5;
     
-    vol = (adc + 1) * 3.3 / (4095 + 1);//0-3.3V,12bit(0-4095)
-    moisture  = 100 * (1.65 - vol) / (1.65 - 1.2);//100 * (dry_voltage - now_voltage) / (dry_voltage - full_of_water_voltage)
+    vol = (adc + 1) * 3300 / (4095 + 1);//0-3300mV,12bit(0-4095)
+    moisture  = 100 * (1650 - vol) / (1650 - 1200);//100 * (dry_voltage - now_voltage) / (dry_voltage - full_of_water_voltage)
     
-    Serial.printf("Voltage: %2.2fV  Moisture: %0.2f%%\r\n", vol, moisture);
+    Serial.printf("Voltage: %2.2fmV  Moisture: %0.2f%%\r\n", vol, moisture);
 
     //Add the measured values to JSON
     api.add(moisture, sensor_moisture);
@@ -71,13 +71,13 @@ void loop() {
       }
 
     //Getting values from API
-    float res_moisture =  api.get(sensor_moisture);
+    float res_moisture =  api.get_float(sensor_moisture);
     
     Serial.printf("Moisture: %0.2f%%(Received from the API)\r\n", res_moisture);
 
     //Judge the watering
     threshold_moisture = 50.0;//Turn on when 50% or less
-    //threshold_moisture = api.get(control_threshold);//You can also fetch the thresholds recorded in the cloud.
+    //threshold_moisture = api.get_float(control_threshold);//You can also fetch the thresholds recorded in the cloud.
     
     if (moisture <= threshold_moisture){
       Serial.println("Needs watering");

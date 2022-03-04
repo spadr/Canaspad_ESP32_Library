@@ -25,7 +25,7 @@ void setup() {
   }
   
   //Get the uuid
-  sensor_conc   = api.set("conc",  "co2", "number", 3, true);
+  sensor_conc   = api.set("conc",  "co2", "number");
 }
 
 void loop() {
@@ -55,7 +55,7 @@ void loop() {
       }
 
     //Getting values from API
-    float res_conc =  api.get(sensor_conc);
+    float res_conc =  api.get_float(sensor_conc);
     
     Serial.printf("CO2 Concentration: %0.2f%%(Received from the API)\r\n", res_conc);
     Serial.println("---------------------------------------------");

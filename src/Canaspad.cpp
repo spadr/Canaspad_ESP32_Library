@@ -5,7 +5,7 @@
 
 #include "Canaspad.h"
 
-String CANASPAD_HOST  = "iot.canaspad.com";
+String CANASPAD_HOST  = "ver3.canaspad.com";
 
 int httpCode;
 String payload;
@@ -20,12 +20,14 @@ String access_token;
 const char* apiusername;
 const char* apipassword;
 
-String ENDPOINTS_SET = "/api/set/";
-String ENDPOINTS_DATA = "/api/data/";
-String ENDPOINTS_IMG = "/api/image/";
-String ENDPOINTS_RECEIVE = "/api/data/output/";
-String ENDPOINTS_AUTH = "/api/token/";
-String ENDPOINTS_REFRESH = "/api/token/refresh/";
+
+String ENDPOINT_USER = "/api/user/";
+String ENDPOINT_TUBE = "/api/tube/";
+String ENDPOINT_ELEMENTS = "/api/elements/";
+String ENDPOINT_ELEMENT = "/api/element/";
+String ENDPOINT_TIME = "/api/time/";
+String ENDPOINT_AUTH = "/api/token/";
+String ENDPOINT_REFRESH = "/api/token/refresh/";
 
 Canaspad::Canaspad()
 {
@@ -57,36 +59,124 @@ Canaspad::begin(const char ssid[], const char password[],int UTC_offset,const ch
   return true;
 }
 
+
 String
-Canaspad::set(String device_name, String device_channel, String device_type, int alive_interval, bool monitoring){
-  getapirefresh();
-  String device_settings = "{";
-  device_settings += json_format("name", device_name, false);
-  device_settings += ",";
-  device_settings += json_format("channel", device_channel, false);
-  device_settings += ",";
-  device_settings += json_format("type", device_type, false);
-  device_settings += ",";
-  device_settings += json_format("interval", String(alive_interval), true);
-  device_settings += ",";
-  device_settings += json_format("monitoring", String(monitoring), true);
-  device_settings += "}";
-  String json_send = "{";
-  json_send += json_format("content", device_settings, true);
-  json_send += "}";
-  String token = postset(json_send);
+Canaspad::set(String tube_name, String tube_channel, String tube_type){
+  bool isnt_send = false;
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_TUBE+ "?name=" + tube_name + "&channel=" + tube_channel;
+  HTTPClient http;
+  http.begin(url);
+  http.addHeader("Authorization", "Bearer " + access_token);
+  http.addHeader("Content-Type", "application/json");
+  int now = startup + millis()/1000;
+  httpCode = http.GET();
+  payload = http.getString();
+  http.end();
+  String return_data;
   if (httpCode == 201) { //Check for the returning code
-    return token;
+    StaticJsonDocument<1024> set_doc;
+    deserializeJson(set_doc, payload);
+    const char* buf = set_doc["tubes"][0]["token"];
+    return_data = String(buf);
+    return return_data;
+  }
+  else if(httpCode == 401){
+    getapirefresh();
+    String url = "http://" + CANASPAD_HOST + ENDPOINT_TUBE+ "?name=" + tube_name + "&channel=" + tube_channel;
+    HTTPClient http;
+    http.begin(url);
+    http.addHeader("Authorization", "Bearer " + access_token);
+    http.addHeader("Content-Type", "application/json");
+    int now = startup + millis()/1000;
+    httpCode = http.GET();
+    payload = http.getString();
+    http.end();
+    if (httpCode == 201) { //Check for the returning code
+      StaticJsonDocument<1024> set_doc;
+      deserializeJson(set_doc, payload);
+      const char* buf = set_doc["tubes"][0]["token"];
+      String return_data = String(buf);
+      return return_data;
+    }
+    else{
+      isnt_send = true;
+      }
     }
   else {
-    return "Nan";
+    isnt_send = true;
+  }
+
+  if (isnt_send){
+    String json_send = "{";
+    json_send += json_format("name", tube_name, false);
+    json_send += ",";
+    json_send += json_format("channel", tube_channel, false);
+    json_send += ",";
+    json_send += json_format("type", tube_type, false);
+    json_send += "}";
+    HTTPClient http;
+    String url = "http://" + CANASPAD_HOST + ENDPOINT_TUBE;
+    http.begin(url);
+    http.addHeader("Authorization", "Bearer " + access_token);
+    http.addHeader("Content-Type", "application/json");
+    int now = startup + millis()/1000;
+    httpCode = http.POST(json_send);
+    payload = http.getString();
+    http.end();
+    if (httpCode == 201) { //Check for the returning code
+      StaticJsonDocument<1024> set_doc2;
+      deserializeJson(set_doc2, payload);
+      const char* buf2 = set_doc2["tubes"][0]["token"];
+      String return_data2 = String(buf2);
+      return return_data2;
     }
+    else {
+    return "ERR";
+    }
+  }
+}
+
+void
+Canaspad::add(String value, String token){
+  add_(value, token);
+}
+
+void
+Canaspad::add(int value, String token){
+  add_(String(value), token);
+}
+
+void
+Canaspad::add(float value, String token){
+  add_(String(value), token);
+}
+
+void
+Canaspad::add(bool value, String token){
+  add_(String(value), token);
 }
 
 
+void
+Canaspad::add_(String value, String token){
+  String content = "";
+  content += "{";
+  content += json_format("token", token, false);
+  content += ",";
+  content += json_format("value", value, false);
+  content += ",";
+  content += json_format("time", String(gettimestamp()), false);
+  content += "}";
+  if(json_flag){
+    json_content += ",";
+  }
+  json_flag = true;
+  json_content += content;
+  packet_cnt += 1;
+}
+
 bool
 Canaspad::send(){
-  getapirefresh();
   String json_send = "{";
   json_send += json_format("content", "[" + json_content + "]", true);
   json_send += "}";
@@ -97,6 +187,27 @@ Canaspad::send(){
     json_flag = false;
     return true;
     }
+  else if(httpCode == 401){
+    getapirefresh();
+    String json_send = "{";
+    json_send += json_format("content", "[" + json_content + "]", true);
+    json_send += "}";
+    httpCode = postdata(json_send);
+    if (httpCode == 201) { //Check for the returning code
+      json_content = "";
+      packet_cnt = 0;
+      json_flag = false;
+      return true;
+      }
+    else{
+      if (packet_cnt >= 1000){
+      json_content = "";
+      packet_cnt = 0;
+      json_flag = false;
+    }
+    return false;
+      }
+  }
   else {
     if (packet_cnt >= 1000){
       json_content = "";
@@ -106,6 +217,48 @@ Canaspad::send(){
     return false;
     }
 }
+
+int
+Canaspad::postdata(String json_send){
+  HTTPClient http;
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_ELEMENTS;
+  http.begin(url);
+  http.addHeader("Authorization", "Bearer " + access_token);
+  http.addHeader("Content-Type", "application/json");
+  int now = startup + millis()/1000;
+  httpCode = http.POST(json_send);
+  payload = http.getString();
+  http.end();
+  if (httpCode == 201) { //Check for the returning code
+    StaticJsonDocument<512> time_doc2;
+    deserializeJson(time_doc2, payload);
+    int returned = time_doc2["time"];
+    time_offset = returned - now;
+  }
+  return httpCode;
+}
+
+bool
+Canaspad::getapitime(){
+  HTTPClient http;
+  StaticJsonDocument<512> time_doc;
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_TIME;
+  http.begin(url);
+  httpCode = http.GET();
+  if (httpCode == 200) {
+    payload = http.getString();
+    deserializeJson(time_doc, payload);
+    int returned = time_doc["time"];
+    startup = returned - millis()/1000;
+    http.end();
+    return true;
+    }
+  else {
+    http.end();
+    return false;
+    }
+}
+
 
 String
 Canaspad::gettime(){
@@ -151,61 +304,6 @@ Canaspad::json_format(String label, String value, bool is_list){
   return json_;
 }
 
-void
-Canaspad::add(String value, String token){
-  add_(value, token);
-}
-
-void
-Canaspad::add(int value, String token){
-  add_(String(value), token);
-}
-
-void
-Canaspad::add(float value, String token){
-  add_(String(value), token);
-}
-
-
-void
-Canaspad::add_(String value, String token){
-  String content = "";
-  content += "{";
-  content += json_format("device_token", token, false);
-  content += ",";
-  content += json_format("data", value, false);
-  content += ",";
-  content += json_format("time", String(gettimestamp()), false);
-  content += "}";
-  if(json_flag){
-    json_content += ",";
-  }
-  json_flag = true;
-  json_content += content;
-  packet_cnt += 1;
-}
-
-bool
-Canaspad::getapitime(){
-  HTTPClient http;
-  StaticJsonDocument<512> time_doc;
-  String url = "http://" + CANASPAD_HOST + ENDPOINTS_DATA;
-  http.begin(url);
-  httpCode = http.GET();
-  if (httpCode == 200) {
-    payload = http.getString();
-    deserializeJson(time_doc, payload);
-    int returned = time_doc["time"];
-    startup = returned - millis()/1000;
-    http.end();
-    return true;
-    }
-  else {
-    http.end();
-    return false;
-    }
-}
-
 bool
 Canaspad::getapiauth(){
   HTTPClient http;
@@ -215,7 +313,7 @@ Canaspad::getapiauth(){
   auth_json += ",";
   auth_json += json_format("password", String(apipassword), false);
   auth_json += "}";
-  String url = "http://" + CANASPAD_HOST + ENDPOINTS_AUTH;
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_AUTH;
   http.begin(url);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(auth_json);
@@ -242,7 +340,7 @@ Canaspad::getapirefresh(){
   String refresh_send = "{";
   refresh_send += json_format("refresh", refresh_token, false);
   refresh_send += "}";
-  String refresh_url = "http://" + CANASPAD_HOST + ENDPOINTS_REFRESH;
+  String refresh_url = "http://" + CANASPAD_HOST + ENDPOINT_REFRESH;
   http.begin(refresh_url);
   http.addHeader("Content-Type", "application/json");
   httpCode = http.POST(refresh_send);
@@ -260,79 +358,98 @@ Canaspad::getapirefresh(){
     }
 }
 
-int
-Canaspad::postdata(String json_send){
-  HTTPClient http;
-  String url = "http://" + CANASPAD_HOST + ENDPOINTS_DATA;
-  http.begin(url);
-  http.addHeader("Authorization", "Bearer " + access_token);
-  http.addHeader("Content-Type", "application/json");
-  int now = startup + millis()/1000;
-  httpCode = http.POST(json_send);
-  payload = http.getString();
-  http.end();
-  if (httpCode == 201) { //Check for the returning code
-    StaticJsonDocument<512> time_doc2;
-    deserializeJson(time_doc2, payload);
-    int returned = time_doc2["time"];
-    time_offset = returned - now;
-  }
-  return httpCode;
-}
-
-String
-Canaspad::postset(String json_send){
-  HTTPClient http;
-  String url = "http://" + CANASPAD_HOST + ENDPOINTS_SET;
-  http.begin(url);
-  http.addHeader("Authorization", "Bearer " + access_token);
-  http.addHeader("Content-Type", "application/json");
-  int now = startup + millis()/1000;
-  httpCode = http.POST(json_send);
-  payload = http.getString();
-  http.end();
-  String return_data;
-  if (httpCode == 201) { //Check for the returning code
-    StaticJsonDocument<1024> set_doc;
-    deserializeJson(set_doc, payload);
-    const char* buf = set_doc["device_token"];
-    return_data = String(buf);
-  }
-  return return_data;
-}
-
 float
-Canaspad::get(String token){
-  String json_send = "{";
-  json_send += json_format("device_token", token, false);
-  json_send += ",";
-  json_send += json_format("lengh", "0", false);
-  json_send += "}";
-  getdata(json_send);
+Canaspad::get_float(String token){
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_ELEMENT + "?token=" + token + "&length=" + "1";
+  HTTPClient http;
+  http.begin(url);
+  http.addHeader("Authorization", "Bearer " + access_token);
+  http.addHeader("Content-Type", "application/json");
+  httpCode = http.GET();
+  payload = http.getString();
+  http.end();
   StaticJsonDocument<2048> return_doc;
+  float return_data;
   if (httpCode == 200) {
     deserializeJson(return_doc, payload);
-    float return_data  = return_doc[0]["fields"]["data"];
-    return return_data;
+    return_data  = return_doc["number"][0]["value"];
     }
   else {
     getapiauth();
-    getdata(json_send);
+    HTTPClient http;
+    http.begin(url);
+    http.addHeader("Authorization", "Bearer " + access_token);
+    http.addHeader("Content-Type", "application/json");
+    httpCode = http.GET();
+    payload = http.getString();
+    http.end();
     deserializeJson(return_doc, payload);
-    float return_data  = return_doc[0]["fields"]["data"];
-    return return_data;
+    return_data = return_doc["number"][0]["value"];
     }
-}
+  return return_data;
+  }
 
-
-void
-Canaspad::getdata(String json_send){
+bool
+Canaspad::get_boolean(String token){
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_ELEMENT+ "?token=" + token + "&length=" + "1";
   HTTPClient http;
-  String url = "http://" + CANASPAD_HOST + ENDPOINTS_RECEIVE;
   http.begin(url);
   http.addHeader("Authorization", "Bearer " + access_token);
   http.addHeader("Content-Type", "application/json");
-  httpCode = http.POST(json_send);
+  httpCode = http.GET();
   payload = http.getString();
   http.end();
-}
+  StaticJsonDocument<2048> return_doc;
+  bool return_data;
+  if (httpCode == 200) {
+    deserializeJson(return_doc, payload);
+    const char* buf = return_doc["boolean"][0]["value"];
+    return_data = bool(buf);
+    }
+  else {
+    getapiauth();
+    HTTPClient http;
+    http.begin(url);
+    http.addHeader("Authorization", "Bearer " + access_token);
+    http.addHeader("Content-Type", "application/json");
+    httpCode = http.GET();
+    payload = http.getString();
+    http.end();
+    deserializeJson(return_doc, payload);
+    return_data = return_doc["boolean"][0]["value"];
+    }
+  return return_data;
+  }
+  
+String
+Canaspad::get_string(String token){
+  String url = "http://" + CANASPAD_HOST + ENDPOINT_ELEMENT+ "?token=" + token + "&length=" + "1";
+  HTTPClient http;
+  http.begin(url);
+  http.addHeader("Authorization", "Bearer " + access_token);
+  http.addHeader("Content-Type", "application/json");
+  httpCode = http.GET();
+  payload = http.getString();
+  http.end();
+  StaticJsonDocument<2048> return_doc;
+  String return_data;
+  if (httpCode == 200) {
+    deserializeJson(return_doc, payload);
+    const char* buf = return_doc["char"][0]["value"];
+    return_data = String(buf);
+    }
+  else {
+    getapiauth();
+    HTTPClient http;
+    http.begin(url);
+    http.addHeader("Authorization", "Bearer " + access_token);
+    http.addHeader("Content-Type", "application/json");
+    httpCode = http.GET();
+    payload = http.getString();
+    http.end();
+    deserializeJson(return_doc, payload);
+    const char* buf = return_doc["char"][0]["value"];
+    return_data = String(buf);
+    }
+  return return_data;
+  }

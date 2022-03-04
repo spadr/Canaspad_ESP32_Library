@@ -41,10 +41,10 @@ void setup() {
   Serial.println("OK");
   
   //Get the token for each sensor
-  sensor_tmp   = api.set("temp",  "env2", "number", 3, true);
-  sensor_hum   = api.set("hum",   "env2", "number", 3, true);
-  sensor_press = api.set("press", "env2", "number", 3, true);
-  sensor_housa = api.set("housa", "env2", "number", 3, true);
+  sensor_tmp   = api.set("temp",  "env2", "number");
+  sensor_hum   = api.set("hum",   "env2", "number");
+  sensor_press = api.set("press", "env2", "number");
+  sensor_housa = api.set("housa", "env2", "number");
 }
 
 
@@ -83,10 +83,10 @@ void loop() {
       }
 
     //Getting values from API
-    float res_temp =  api.get(sensor_tmp);
-    float res_hum =  api.get(sensor_hum);
-    float res_press =  api.get(sensor_press);
-    float res_housa =  api.get(sensor_housa);
+    float res_temp =  api.get_float(sensor_tmp);
+    float res_hum =  api.get_float(sensor_hum);
+    float res_press =  api.get_float(sensor_press);
+    float res_housa =  api.get_float(sensor_housa);
     
     Serial.printf("Temperature: %2.2f*C  Humedad: %0.2f%%(Received from the API)\r\n", res_temp, res_hum);
     Serial.printf("Pressure: %0.2fhPa  Humidity Deficit: %0.2fg/m^2%(Received from the API)\r\n", res_press, res_housa);

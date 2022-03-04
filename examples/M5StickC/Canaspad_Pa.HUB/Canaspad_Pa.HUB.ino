@@ -31,12 +31,12 @@ void setup() {
   Serial.println("API connection succeeded.");
   
   //Getting a uuid
-  sensor_val0   = api.set("Port0",  "Pa.hub", "number", 10, true);
-  sensor_val1   = api.set("Port1",  "Pa.hub", "number", 10, true);
-  sensor_val2   = api.set("Port2",  "Pa.hub", "number", 10, true);
-  sensor_val3   = api.set("Port3",  "Pa.hub", "number", 10, true);
-  sensor_val4   = api.set("Port4",  "Pa.hub", "number", 10, true);
-  sensor_val5   = api.set("Port5",  "Pa.hub", "number", 10, true);
+  sensor_val0   = api.set("Port0",  "Pa.hub", "number");
+  sensor_val1   = api.set("Port1",  "Pa.hub", "number");
+  sensor_val2   = api.set("Port2",  "Pa.hub", "number");
+  sensor_val3   = api.set("Port3",  "Pa.hub", "number");
+  sensor_val4   = api.set("Port4",  "Pa.hub", "number");
+  sensor_val5   = api.set("Port5",  "Pa.hub", "number");
 
   //Initializing the Pa.hub
   Wire.begin(32,33);

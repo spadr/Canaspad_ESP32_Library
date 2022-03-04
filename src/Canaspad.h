@@ -15,13 +15,15 @@ public:
   Canaspad();
   void domain(String domain);
   bool begin(const char ssid[], const char password[],int UTC_offset, const char* api_username, const char* api_password);
-  String set(String device_name, String device_channel, String device_type, int interval, bool monitoring);
-  bool send();
+  String set(String tube_name, String tube_channel, String tube_type);
   void add(String value, String token);
   void add(int value, String token);
   void add(float value, String token);
-  float get(String token);
-  void getdata(String json_send);
+  void add(bool value, String token);
+  bool send();
+  float get_float(String token);
+  bool get_boolean(String token);
+  String get_string(String token);
   int32_t image_post( uint8_t * ui8BufJpg, uint32_t iNumDat );
   String gettime();
   unsigned long gettimestamp();
@@ -39,7 +41,6 @@ private:
   bool getapiauth();
   bool getapirefresh();
   int postdata(String json_send);
-  String postset(String json_send);
   const char* apiusername;
   const char* apipassword;
   void add_(String value, String token);

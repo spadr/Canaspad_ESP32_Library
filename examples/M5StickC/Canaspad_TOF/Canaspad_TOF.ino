@@ -31,7 +31,7 @@ void setup() {
   Serial.println("API connection succeeded.");
   
   //Getting a uuid
-  sensor_distance   = api.set("TOF",  "distance", "number", 10, true);
+  sensor_distance   = api.set("TOF",  "distance", "number");
 
   //Initializing the sensor
   tof.setAddress(0x29);
@@ -68,7 +68,7 @@ void loop() {
       }
 
     //Getting values from API
-    float res_distance =  api.get(sensor_distance);
+    float res_distance =  api.get_float(sensor_distance);
     
     Serial.printf("Distance: %2.2fmm(Received from the API)\r\n", res_distance);
     Serial.println("---------------------------------------------");
