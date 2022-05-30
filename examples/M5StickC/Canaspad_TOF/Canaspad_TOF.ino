@@ -22,13 +22,14 @@ void setup() {
   
   Serial.begin(115200);
 
-  //Connecting to the API
-  if(not api.begin(ssid, password, 9, api_username, api_password)){
-    Serial.println("Failed to connect API!");
+  //api.domain("own.server.com");//Sending to your own server
+  
+  api.wifi(ssid, password);//Add WiFi configuration
+  
+  if(not api.begin(api_username, api_password, 9)){
+    Serial.println("Connection Faild");
     Serial.println(api.httpCode);
-    while(1){}
   }
-  Serial.println("API connection succeeded.");
   
   //Getting a uuid
   sensor_distance   = api.set("TOF",  "distance", "number", 10, true);

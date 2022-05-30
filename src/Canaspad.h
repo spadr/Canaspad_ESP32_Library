@@ -6,6 +6,7 @@
 #define Canaspad_h
 
 #include <WiFi.h>
+#include <WiFiMulti.h>
 #include <HTTPClient.h>
 #include <time.h>
 #include <ArduinoJson.h>
@@ -14,7 +15,8 @@ class Canaspad {
 public:
   Canaspad();
   void domain(String domain);
-  bool begin(const char ssid[], const char password[],int UTC_offset, const char* api_username, const char* api_password);
+  void wifi(const char* ssid, const char* password);
+  bool begin(const char* api_username, const char* api_password, int UTC_offset);
   String set(String device_name, String device_channel, String device_type, int interval, bool monitoring);
   bool send();
   void add(String value, String token);

@@ -21,8 +21,10 @@ void setup() {
   
   //api.domain("own.server.com");//Sending to your own server
   
-  if(not api.begin(ssid, password, 9, api_username, api_password)){
-    Serial.println("Api Connection Faild");
+  api.wifi(ssid, password);//Add WiFi configuration
+  
+  if(not api.begin(api_username, api_password, 9)){
+    Serial.println("Connection Faild");
     Serial.println(api.httpCode);
   }
   
@@ -58,7 +60,7 @@ void loop() {
     //Getting values from API
     float res_vol =  api.get(sensor_vol);
     
-    Serial.printf("Voltage: %2.2fV(Received from the API)\r\n", res_vol);
+    Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", res_vol);
     Serial.println("---------------------------------------------");
     delay(10*1000);
   }

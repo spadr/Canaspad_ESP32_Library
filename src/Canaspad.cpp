@@ -5,7 +5,10 @@
 
 #include "Canaspad.h"
 
+WiFiMulti wifiMulti;
+
 String CANASPAD_HOST  = "iot.canaspad.com";
+int WIFI_TIMEOUT = 3000;
 
 int httpCode;
 String payload;
@@ -36,24 +39,42 @@ Canaspad::domain(String domain) {
   CANASPAD_HOST = domain;
 }
 
+void
+Canaspad::wifi(const char* ssid, const char* password) {
+  wifiMulti.addAP(ssid, password);
+}
+
 bool
-Canaspad::begin(const char ssid[], const char password[],int UTC_offset,const char* api_username, const char* api_password) {
-  WiFi.begin(ssid, password);
-  Serial.print("WiFi connecting");
-  while (WiFi.status() != WL_CONNECTED) {
+Canaspad::begin(const char* api_username, const char* api_password, int UTC_offset) {
+  Serial.println(" ");
+  Serial.print("(1/4)WiFi connecting...");
+  int cnt = 0;
+  while (wifiMulti.run() != WL_CONNECTED) {
     delay(100);
     Serial.print(".");
+    cnt++;
+    if (cnt>=WIFI_TIMEOUT){
+      Serial.println("TimeOut!");
+      Serial.println("WiFi connection failed");
+      return false;
+    }
   }
   Serial.println("OK");
+  Serial.println("(2/4)WiFi connection succeeded");
   dif_UTC = UTC_offset;
   if(not getapitime()){
+    Serial.println("API connection failed");
     return false;
   }
+  Serial.println("(3/4)API connection succeeded");
   apiusername = api_username;
   apipassword = api_password;
   if(not getapiauth()){
+    Serial.println("User authentication failed");
     return false;
   }
+  Serial.println("(4/4)User authentication succeeded");
+  Serial.println(" ");
   return true;
 }
 
@@ -182,7 +203,7 @@ Canaspad::add_(String value, String token){
   }
   json_flag = true;
   json_content += content;
-  packet_cnt += 1;
+  packet_cnt++;
 }
 
 bool

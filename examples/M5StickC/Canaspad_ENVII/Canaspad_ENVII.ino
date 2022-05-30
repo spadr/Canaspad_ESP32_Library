@@ -29,8 +29,12 @@ void setup() {
   
   Serial.begin(115200);
   
-  if(not api.begin(ssid, password, 9, api_username, api_password)){
-    Serial.println("Api Connection Faild");
+  //api.domain("own.server.com");//Sending to your own server
+  
+  api.wifi(ssid, password);//Add WiFi configuration
+  
+  if(not api.begin(api_username, api_password, 9)){
+    Serial.println("Connection Faild");
     Serial.println(api.httpCode);
   }
   
