@@ -4,8 +4,8 @@
 
 
 
-const char  ssid[]       = "WiFi_ssid";
-const char  password[]   = "WiFi_pass";
+const char* ssid         = "WiFi_ssid";
+const char* password     = "WiFi_pass";
 const char* api_username = "user@mail.com";
 const char* api_password = "password";
 
