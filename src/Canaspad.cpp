@@ -30,6 +30,9 @@ String ENDPOINTS_RECEIVE = "/api/data/output/";
 String ENDPOINTS_AUTH = "/api/token/";
 String ENDPOINTS_REFRESH = "/api/token/refresh/";
 
+int UUID_LENGTH = 36;
+bool WIFI_CONNECTION = false;
+
 Canaspad::Canaspad()
 {
 
@@ -41,13 +44,26 @@ Canaspad::domain(String domain) {
 
 void
 Canaspad::wifi(const char* ssid, const char* password) {
-  wifiMulti.addAP(ssid, password);
+  if (wifiMulti.addAP(ssid, password)){
+    WIFI_CONNECTION = true;
+  }
 }
 
 bool
 Canaspad::begin(const char* api_username, const char* api_password, int UTC_offset) {
   Serial.println(" ");
   Serial.print("(1/4)WiFi connecting...");
+
+  if (CANASPAD_HOST.length() < 5){
+    Serial.println("(ERR)Incorrect domain");
+    return false;
+  }
+
+  if (! WIFI_CONNECTION){
+    Serial.println("(ERR)Incorrect WiFi configuration");
+    return false;
+  }
+  
   int cnt = 0;
   while (wifiMulti.run() != WL_CONNECTED) {
     delay(100);
@@ -79,18 +95,18 @@ Canaspad::begin(const char* api_username, const char* api_password, int UTC_offs
 }
 
 String
-Canaspad::set(String device_name, String device_channel, String device_type, int alive_interval, bool monitoring){
+Canaspad::set(String device_name, String device_channel, String data_type, bool alive_monitoring, int alive_monitoring_interval){
   getapirefresh();
   String device_settings = "{";
   device_settings += json_format("name", device_name, false);
   device_settings += ",";
   device_settings += json_format("channel", device_channel, false);
   device_settings += ",";
-  device_settings += json_format("type", device_type, false);
+  device_settings += json_format("type", data_type, false);
   device_settings += ",";
-  device_settings += json_format("interval", String(alive_interval), true);
+  device_settings += json_format("interval", String(alive_monitoring_interval), true);
   device_settings += ",";
-  device_settings += json_format("monitoring", String(monitoring), true);
+  device_settings += json_format("monitoring", String(alive_monitoring), true);
   device_settings += "}";
   String json_send = "{";
   json_send += json_format("content", device_settings, true);
@@ -100,7 +116,8 @@ Canaspad::set(String device_name, String device_channel, String device_type, int
     return token;
     }
   else {
-    return "Nan";
+    Serial.println("(ERR) Ch:"+device_channel+"&Name:"+device_name+" "+"No device Token.");
+    return "No device Token.";
     }
 }
 
@@ -111,8 +128,8 @@ Canaspad::send(){
   String json_send = "{";
   json_send += json_format("content", "[" + json_content + "]", true);
   json_send += "}";
-  httpCode = postdata(json_send);
-  if (httpCode == 201) { //Check for the returning code
+  int _httpCode = postdata(json_send);
+  if (_httpCode == 201) { //Check for the returning code
     json_content = "";
     packet_cnt = 0;
     json_flag = false;
@@ -172,24 +189,45 @@ Canaspad::json_format(String label, String value, bool is_list){
   return json_;
 }
 
-void
-Canaspad::add(String value, String token){
-  add_(value, token);
+bool
+Canaspad::add(String token, String value){
+  if (token.length() == UUID_LENGTH){
+    add_(token, value);
+    return true;
+  }
+  else{
+    Serial.println("(ERR)Incorrect device token");
+    return false;
+  }
 }
 
-void
-Canaspad::add(int value, String token){
-  add_(String(value), token);
+bool
+Canaspad::add(String token, int value){
+  if (token.length() == UUID_LENGTH){
+    add_(token, String(value));
+    return true;
+  }
+  else{
+    Serial.println("(ERR)Incorrect device token");
+    return false;
+  }
 }
 
-void
-Canaspad::add(float value, String token){
-  add_(String(value), token);
+bool
+Canaspad::add(String token, float value){
+  if (token.length() == UUID_LENGTH){
+    add_(token, String(value));
+    return true;
+  }
+  else{
+    Serial.println("(ERR)Incorrect device token");
+    return false;
+  }
 }
 
 
 void
-Canaspad::add_(String value, String token){
+Canaspad::add_(String token, String value){
   String content = "";
   content += "{";
   content += json_format("device_token", token, false);
@@ -336,13 +374,14 @@ Canaspad::get(String token){
     float return_data  = return_doc[0]["fields"]["data"];
     return return_data;
     }
-  else {
-    getapiauth();
-    getdata(json_send);
+  getapiauth();
+  getdata(json_send);
+  if (httpCode == 200) {
     deserializeJson(return_doc, payload);
     float return_data  = return_doc[0]["fields"]["data"];
     return return_data;
     }
+  return sqrt (-1);//NaN
 }
 
 

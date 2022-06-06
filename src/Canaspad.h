@@ -16,12 +16,12 @@ public:
   Canaspad();
   void domain(String domain);
   void wifi(const char* ssid, const char* password);
-  bool begin(const char* api_username, const char* api_password, int UTC_offset);
-  String set(String device_name, String device_channel, String device_type, int interval, bool monitoring);
+  bool begin(const char* api_username, const char* api_password, int UTC_offset=9);
+  String set(String device_name, String device_channel, String data_type="number", bool alive_monitoring=false, int alive_monitoring_interval=30);
   bool send();
-  void add(String value, String token);
-  void add(int value, String token);
-  void add(float value, String token);
+  bool add(String token, String value);
+  bool add(String token, int value);
+  bool add(String token, float value);
   float get(String token);
   void getdata(String json_send);
   int32_t image_post( uint8_t * ui8BufJpg, uint32_t iNumDat );
