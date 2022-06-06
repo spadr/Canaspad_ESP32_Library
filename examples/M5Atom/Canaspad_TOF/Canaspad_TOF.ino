@@ -18,7 +18,7 @@ float distance = 0.0;
 
 
 void setup() {
-  M5.begin(true,false,false)
+  M5.begin(true,false,false);
   
   Wire.begin(26,32);
   
@@ -27,14 +27,14 @@ void setup() {
   //api.domain("own.server.com");//Sending to your own server
   
   api.wifi(ssid, password);//Add WiFi configuration
+  //api.wifi("ssid2", "password2");//Add multiple WiFi settings.
   
-  if(not api.begin(api_username, api_password, 9)){
+  if(not api.begin(api_username, api_password)){
     Serial.println("Connection Faild");
-    Serial.println(api.httpCode);
   }
   
   //Getting a uuid
-  sensor_distance   = api.set("TOF",  "distance", "number", 10, true);
+  sensor_distance   = api.set("TOF",  "distance");
 
   //Initializing the sensor
   tof.setAddress(0x29);

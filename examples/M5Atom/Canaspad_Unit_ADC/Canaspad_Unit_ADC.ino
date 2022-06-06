@@ -21,7 +21,7 @@ float vol = 0.0;
 
 
 void setup() {
-  M5.begin(true,false,false)
+  M5.begin(true,false,false);
   
   Wire.begin(26,32);
   
@@ -30,10 +30,10 @@ void setup() {
   //api.domain("own.server.com");//Sending to your own server
   
   api.wifi(ssid, password);//Add WiFi configuration
+  //api.wifi("ssid2", "password2");//Add multiple WiFi settings.
   
-  if(not api.begin(api_username, api_password, 9)){
+  if(not api.begin(api_username, api_password)){
     Serial.println("Connection Faild");
-    Serial.println(api.httpCode);
   }
   
   ads.getAddr_ADS1100(ADS1100_DEFAULT_ADDRESS);
@@ -44,7 +44,7 @@ void setup() {
   ads.begin();
   
   //Get the token
-  sensor_vol   = api.set("vol",  "analog", "number", 3, true);
+  sensor_vol   = api.set("vol",  "analog");
 }
 
 void loop() {

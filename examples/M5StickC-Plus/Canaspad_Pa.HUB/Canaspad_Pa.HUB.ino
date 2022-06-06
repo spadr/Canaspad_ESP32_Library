@@ -25,19 +25,19 @@ void setup() {
   //api.domain("own.server.com");//Sending to your own server
   
   api.wifi(ssid, password);//Add WiFi configuration
+  //api.wifi("ssid2", "password2");//Add multiple WiFi settings.
   
-  if(not api.begin(api_username, api_password, 9)){
+  if(not api.begin(api_username, api_password)){
     Serial.println("Connection Faild");
-    Serial.println(api.httpCode);
   }
   
   //Getting a uuid
-  sensor_val0   = api.set("Port0",  "Pa.hub", "number", 10, true);
-  sensor_val1   = api.set("Port1",  "Pa.hub", "number", 10, true);
-  sensor_val2   = api.set("Port2",  "Pa.hub", "number", 10, true);
-  sensor_val3   = api.set("Port3",  "Pa.hub", "number", 10, true);
-  sensor_val4   = api.set("Port4",  "Pa.hub", "number", 10, true);
-  sensor_val5   = api.set("Port5",  "Pa.hub", "number", 10, true);
+  sensor_val0   = api.set("Port0",  "Pa.hub");
+  sensor_val1   = api.set("Port1",  "Pa.hub");
+  sensor_val2   = api.set("Port2",  "Pa.hub");
+  sensor_val3   = api.set("Port3",  "Pa.hub");
+  sensor_val4   = api.set("Port4",  "Pa.hub");
+  sensor_val5   = api.set("Port5",  "Pa.hub");
 
   //Initializing the Pa.hub
   Wire.begin(32,33);

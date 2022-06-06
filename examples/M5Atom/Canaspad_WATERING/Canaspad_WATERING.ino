@@ -26,18 +26,18 @@ void setup() {
   //api.domain("own.server.com");//Sending to your own server
   
   api.wifi(ssid, password);//Add WiFi configuration
+  //api.wifi("ssid2", "password2");//Add multiple WiFi settings.
   
-  if(not api.begin(api_username, api_password, 9)){
+  if(not api.begin(api_username, api_password)){
     Serial.println("Connection Faild");
-    Serial.println(api.httpCode);
   }
 
   pinMode(INPUT_PIN, INPUT);
   pinMode(PUMP_PIN,OUTPUT);
   
   //Get the uuid
-  sensor_moisture   = api.set("moisture",  "watering", "number", 3, true);
-  //control_threshold   = api.set("moisture",  "control", "number", 3, true);//You can also fetch the thresholds recorded in the cloud.
+  sensor_moisture   = api.set("moisture",  "watering");
+  //control_threshold   = api.set("moisture",  "control");//You can also fetch the thresholds recorded in the cloud.
   
 }
 

@@ -25,7 +25,7 @@ float housa = 0.0;
 
 
 void setup() {
-  M5.begin(true,false,false)
+  M5.begin(true,false,false);
   
   Wire.begin(26,32);
   
@@ -34,10 +34,10 @@ void setup() {
   //api.domain("own.server.com");//Sending to your own server
   
   api.wifi(ssid, password);//Add WiFi configuration
+  //api.wifi("ssid2", "password2");//Add multiple WiFi settings.
   
-  if(not api.begin(api_username, api_password, 9)){
+  if(not api.begin(api_username, api_password)){
     Serial.println("Connection Faild");
-    Serial.println(api.httpCode);
   }
   
   Serial.print(F("ENV Unit(SHT30 and BMP280) test..."));
@@ -47,10 +47,10 @@ void setup() {
   Serial.println("OK");
   
   //Get the token for each sensor
-  sensor_tmp   = api.set("temp",  "env2", "number", 3, true);
-  sensor_hum   = api.set("hum",   "env2", "number", 3, true);
-  sensor_press = api.set("press", "env2", "number", 3, true);
-  sensor_housa = api.set("housa", "env2", "number", 3, true);
+  sensor_tmp   = api.set("temp",  "env2");
+  sensor_hum   = api.set("hum",   "env2");
+  sensor_press = api.set("press", "env2");
+  sensor_housa = api.set("housa", "env2");
 }
 
 
