@@ -4,7 +4,7 @@
 
 Canaspad is a data analytics infrastructure for IoT! You can install SDK in your Arduino IDE and signup canaspad.com and can send & receive data and control microcontroller.
 
-## Installation
+# Installation
 1. Register your email address and password at https://iot.canaspad.com/signup/
 2. Download the library from this repository as a ZIP file.
 ![download ZIP file](img/step1.png)
@@ -12,10 +12,10 @@ Canaspad is a data analytics infrastructure for IoT! You can install SDK in your
 3. Install the library in the Arduino IDE.
 ![include sdk from ZIP file](img/step2.png)
 
-## Reference
+# Reference
 ## Canaspad::domain()
 
----
+
 
 ### Description
 
@@ -43,7 +43,7 @@ Canaspad::void domain(String domain);
 
 ## Canaspad::wifi()
 
----
+
 
 ### Description
 
@@ -76,7 +76,7 @@ Canaspad::void wifi(const char* ssid, const char* password);
 
 ## Canaspad::begin()
 
----
+
 
 ### Description
 
@@ -117,7 +117,7 @@ Canaspad::bool begin(const char* api_username, const char* api_password, int UTC
 
 ## Canaspad::set()
 
----
+
 
 ### Description
 
@@ -162,7 +162,7 @@ Canaspad::String set(String device_name, String device_channel, String data_type
 
 ## Canaspad::add()
 
----
+
 
 ### Description
 
@@ -197,7 +197,7 @@ Canaspad::bool add(String token, float value);
 
 ## Canaspad::send()
 
----
+
 
 ### Description
 
@@ -227,7 +227,7 @@ None
 
 ## Canaspad::get()
 
----
+
 
 ### Description
 
@@ -256,7 +256,7 @@ Canaspad::float get(String token);
 
 ## Canaspad::gettime()
 
----
+
 
 ### Description
 
@@ -284,7 +284,7 @@ Canaspad::String gettime();
 
 ## Canaspad::gettimestamp()
 
----
+
 
 ### Description
 
