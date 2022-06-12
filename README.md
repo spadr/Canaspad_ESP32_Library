@@ -2,14 +2,14 @@
 # SDK for Canaspad API
 ![GitHub](https://img.shields.io/github/license/spadr/Canaspad_ESP32_Library)
 
-Canaspad is a data analytics infrastructure for IoT! You can install SDK in your Arduino IDE and signup canaspad.com and can send & receive data and control microcontroller.
+Canaspad is an IoT data analytics infrastructure! You can send and receive data as well as control a microcontroller by installing the SDK in your Arduino IDE and signing up at canaspad.com.
 
 # Installation
-1. Register your email address and password at https://iot.canaspad.com/signup/
-2. Download the library from this repository as a ZIP file.
+1. Register with your email address and password at canaspad.com
+2. Download the library as a ZIP file from this repository.
 ![download ZIP file](img/step1.png)
 
-3. Install the library in the Arduino IDE.
+3. Open the Arduino IDE and install the library.
 ![include sdk from ZIP file](img/step2.png)
 
 # Reference
@@ -19,7 +19,7 @@ Canaspad is a data analytics infrastructure for IoT! You can install SDK in your
 
 ### Description
 
-Choose where you want your data to be saved. You do not need to change this option if you use [canaspad.com](http://canaspad.com/).
+Select the location where you want your data stored. If you use [canaspad.com](http://canaspad.com/), you do not need to change this option.
 
 ### Syntax
 
@@ -80,7 +80,7 @@ Canaspad::void wifi(const char* ssid, const char* password);
 
 ### Description
 
-Check connection to the cloud server.
+Check the connection to the cloud server.
 
 ### Syntax
 
@@ -101,7 +101,7 @@ Canaspad::bool begin(const char* api_username, const char* api_password, int UTC
     
 - int **UTC_offset**=9
     
-    Time difference from UTC.
+    Time difference between UTC and your local time.
     
 
 ### Return value
@@ -121,7 +121,7 @@ Canaspad::bool begin(const char* api_username, const char* api_password, int UTC
 
 ### Description
 
-The system creates a token that specifies the place on the server where the data will be saved given a channel name and a series name.
+For each channel and series name, a token is generated that identifies where the data will be kept on the server.
 
 ### Syntax
 
@@ -150,7 +150,7 @@ Canaspad::String set(String device_name, String device_channel, String data_type
     
 - int **alive_monitoring_interval**=30
     
-    How many minutes interval to monitor for dead/ alive.
+    Periodic check to see whether the device is dead or alive (minutes).
     
 
 ### Return value
@@ -166,7 +166,7 @@ Canaspad::String set(String device_name, String device_channel, String data_type
 
 ### Description
 
-Add sensor readings to the microcontroller's database.
+Enter sensor readings into the microcontroller's database.
 
 ### Syntax
 
@@ -201,7 +201,7 @@ Canaspad::bool add(String token, float value);
 
 ### Description
 
-The data from the microcomputer's database is transferred to the server.
+The data from the database of the microcomputer is sent to the server.
 
 ### Syntax
 
@@ -231,7 +231,7 @@ None
 
 ### Description
 
-Based on the token, returns the most current value from the provided data series.
+Returns the most recent value from the selected data series based on the token.
 
 ### Syntax
 
@@ -260,7 +260,7 @@ Canaspad::float get(String token);
 
 ### Description
 
-The current time is displayed.
+The current time is shown.
 
 ### Syntax
 
@@ -288,7 +288,7 @@ Canaspad::String gettime();
 
 ### Description
 
-The current time is supplied in UNIX time.
+The current time is shown in UNIX time.
 
 ### Syntax
 
