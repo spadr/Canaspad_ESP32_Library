@@ -19,6 +19,8 @@ float distance = 0.0;
 
 void setup() {
   M5.begin();
+
+  Wire.begin(32,33);
   
   Serial.begin(115200);
 
