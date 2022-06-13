@@ -18,10 +18,13 @@ unsigned long startup = 0;
 bool json_flag = false;
 int time_offset = 0;
 unsigned long packet_cnt = 0;
+
 String refresh_token;
 String access_token;
 const char* apiusername;
 const char* apipassword;
+bool user_authentication_succeeded = false;
+
 
 String ENDPOINTS_SET = "/api/set/";
 String ENDPOINTS_DATA = "/api/data/";
@@ -39,11 +42,21 @@ Canaspad::Canaspad()
 }
 void
 Canaspad::domain(String domain) {
+  if (user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::domain()");
+    Serial.println("(ERROR)Before calling the function Canaspad::begin(), this function must be called.");
+    while(1){}
+  }
   CANASPAD_HOST = domain;
 }
 
 void
 Canaspad::wifi(const char* ssid, const char* password) {
+  if (user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::wifi()");
+    Serial.println("(ERROR)Before calling the function Canaspad::begin(), Canaspad::wifi() must be called.");
+    while(1){}
+  }
   if (wifiMulti.addAP(ssid, password)){
     WIFI_CONNECTION = true;
   }
@@ -55,13 +68,18 @@ Canaspad::begin(const char* api_username, const char* api_password, int UTC_offs
   Serial.print("(1/4)WiFi connecting...");
 
   if (CANASPAD_HOST.length() < 5){
-    Serial.println("(ERR)Incorrect domain");
-    return false;
+    Serial.println("(ERROR IN)Canaspad::begin()");
+    Serial.println("(ERROR)Incorrect domain");
+    Serial.println("(MESSAGE)Check the host to which you are connecting.");
+    Serial.println("(HOST) " + CANASPAD_HOST);
+    return user_authentication_succeeded;
   }
 
   if (! WIFI_CONNECTION){
-    Serial.println("(ERR)Incorrect WiFi configuration");
-    return false;
+    Serial.println("(ERROR IN)Canaspad::begin()");
+    Serial.println("(ERROR)Incorrect WiFi configuration");
+    Serial.println("(MESSAGE)Check the Wi-Fi access point to which you are connecting.");
+    return user_authentication_succeeded;
   }
   
   int cnt = 0;
@@ -70,32 +88,45 @@ Canaspad::begin(const char* api_username, const char* api_password, int UTC_offs
     Serial.print(".");
     cnt++;
     if (cnt>=WIFI_TIMEOUT){
-      Serial.println("TimeOut!");
-      Serial.println("WiFi connection failed");
-      return false;
+      Serial.println("(ERROR IN)Canaspad::begin()");
+      Serial.println("(ERROR)WiFi connection timeout");
+      Serial.println("(MESSAGE)Check the Wi-Fi access point to which you are connecting.");
+      return user_authentication_succeeded;
     }
   }
   Serial.println("OK");
   Serial.println("(2/4)WiFi connection succeeded");
   dif_UTC = UTC_offset;
   if(not getapitime()){
-    Serial.println("API connection failed");
-    return false;
+    Serial.println("(ERROR IN)Canaspad::begin()");
+    Serial.println("(ERROR)API connection failed");
+    Serial.println("(MESSAGE)Check the host to which you are connecting.");
+    Serial.println("(HOST) " + CANASPAD_HOST);
+    return user_authentication_succeeded;
   }
   Serial.println("(3/4)API connection succeeded");
   apiusername = api_username;
   apipassword = api_password;
   if(not getapiauth()){
-    Serial.println("User authentication failed");
-    return false;
+    Serial.println("(ERROR IN)Canaspad::begin()");
+    Serial.println("(ERROR)User authentication failed");
+    Serial.println("(MESSAGE) " + CANASPAD_HOST + " has no record of your account.");
+    Serial.println("(MESSAGE)Check the host to which you are connecting.");
+    return user_authentication_succeeded;
   }
   Serial.println("(4/4)User authentication succeeded");
   Serial.println(" ");
-  return true;
+  user_authentication_succeeded = true;
+  return user_authentication_succeeded;
 }
 
 String
 Canaspad::set(String device_name, String device_channel, String data_type, bool alive_monitoring, int alive_monitoring_interval){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::set()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   getapirefresh();
   String device_settings = "{";
   device_settings += json_format("name", device_name, false);
@@ -116,7 +147,7 @@ Canaspad::set(String device_name, String device_channel, String data_type, bool 
     return token;
     }
   else {
-    Serial.println("(ERR) Ch:"+device_channel+"&Name:"+device_name+" "+"No device Token.");
+    Serial.println("(ERROR) Ch:"+device_channel+"&Name:"+device_name+" "+"No device Token.");
     return "No device Token.";
     }
 }
@@ -124,6 +155,11 @@ Canaspad::set(String device_name, String device_channel, String data_type, bool 
 
 bool
 Canaspad::send(){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::send()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   getapirefresh();
   String json_send = "{";
   json_send += json_format("content", "[" + json_content + "]", true);
@@ -147,6 +183,11 @@ Canaspad::send(){
 
 String
 Canaspad::gettime(){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::gettime()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   static const char *pszWDay[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
   const long int t = startup + time_offset + millis()/1000 + dif_UTC * 60 * 60;
   struct tm *tm;
@@ -168,6 +209,11 @@ Canaspad::gettime(){
 
 unsigned long
 Canaspad::gettimestamp(){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::gettimestamp()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   return startup + time_offset + millis()/1000;
 }
 
@@ -191,36 +237,54 @@ Canaspad::json_format(String label, String value, bool is_list){
 
 bool
 Canaspad::add(String token, String value){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::add()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   if (token.length() == UUID_LENGTH){
     add_(token, value);
     return true;
   }
   else{
-    Serial.println("(ERR)Incorrect device token");
+    Serial.println("(ERROR IN)Canaspad::add()");
+    Serial.println("(ERROR)Incorrect device token");
     return false;
   }
 }
 
 bool
 Canaspad::add(String token, int value){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::add()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   if (token.length() == UUID_LENGTH){
     add_(token, String(value));
     return true;
   }
   else{
-    Serial.println("(ERR)Incorrect device token");
+    Serial.println("(ERROR IN)Canaspad::add()");
+    Serial.println("(ERROR)Incorrect device token");
     return false;
   }
 }
 
 bool
 Canaspad::add(String token, float value){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::add()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   if (token.length() == UUID_LENGTH){
     add_(token, String(value));
     return true;
   }
   else{
-    Serial.println("(ERR)Incorrect device token");
+    Serial.println("(ERROR IN)Canaspad::add()");
+    Serial.println("(ERROR)Incorrect device token");
     return false;
   }
 }
@@ -362,6 +426,11 @@ Canaspad::postset(String json_send){
 
 float
 Canaspad::get(String token){
+  if (!user_authentication_succeeded) {
+    Serial.println("(ERROR IN)Canaspad::get()");
+    Serial.println("(ERROR)The Canaspad::begin() function must be called.");
+    while(1){}
+  }
   String json_send = "{";
   json_send += json_format("device_token", token, false);
   json_send += ",";
