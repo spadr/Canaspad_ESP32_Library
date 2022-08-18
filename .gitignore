@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# dev
+/Canaspad_ESP32_Library.ino
+.vscode/

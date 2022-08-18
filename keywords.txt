@@ -3,6 +3,4 @@ begin KEYWORD2
 set KEYWORD2
 send KEYWORD2
 add KEYWORD2
-gettime KEYWORD2
-gettimestamp KEYWORD2
-
+fetch KEYWORD2
