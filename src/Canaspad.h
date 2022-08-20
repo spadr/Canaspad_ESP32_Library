@@ -16,7 +16,7 @@ public:
 
     bool begin();
     bool set(String const channel, String const name, Tube &sensor_config);
-    bool write(struct tm &timeInfo, Tube &sensor_config);
+    bool write(struct tm &time_info, Tube &sensor_config);
     http_code_t send(Tube &sensor_config);
     void fetch(float *fresh_value, Tube &sensor_config);
     void fetch(int *fresh_value, Tube &sensor_config);

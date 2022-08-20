@@ -25,12 +25,16 @@ bool Canaspad::set(String const channel, String const name, Tube &sensor_config)
     return foo;
 }
 
-bool Canaspad::write(struct tm &timeInfo, Tube &sensor_config)
+bool Canaspad::write(struct tm &time_info, Tube &sensor_config)
 {
-    // TODO: Get timestamp from timeInfo
-    timestamp_tz_t timestamp = "2004-10-19 10:23:54+09";
-    bool foo = sensor_config.append(timestamp);
-    return foo;
+    // DONE: Get timestamp from timeInfo
+    struct tm now = time_info;
+    char buf[20];
+    sprintf(buf, " %04d-%02d-%02d %02d:%02d:%02d",
+          now.tm_year + 1900, now.tm_mon + 1, now.tm_mday,
+          now.tm_hour, now.tm_min, now.tm_sec);
+    timestamp_tz_t timestamp = String(buf);
+    return sensor_config.append(timestamp);
 }
 
 http_code_t Canaspad::send(Tube &sensor_config)
