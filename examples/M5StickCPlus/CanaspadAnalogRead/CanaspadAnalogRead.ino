@@ -8,6 +8,12 @@ const char *api_url = "Canaspad_project_in_supabase";
 const char *api_key = "anon_key";
 const char *api_username = "user@mail.com";
 const char *api_password = "password";
+const char* ntp_server = "ntp.nict.jp";
+const long gmt_offset_sec     = 0;
+const int daylight_offset_sec = 3600 * 9;
+
+
+Canaspad api(api_url, api_key, api_username, api_password);
 
 float sensing_value;
 Tube voltage_sensor(&sensing_value);
@@ -40,13 +46,13 @@ void setup()
     // Get the Tube token
     api.set("ch01", "name01", voltage_sensor);
 
-    configTime(9 * 3600L, 0, "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp");
+    configTime(gmt_offset_sec, daylight_offset_sec, ntp_server);
 }
 
 void loop()
 {
     getLocalTime(&timeInfo);
-    if (timeInfo.tm_sec == 0)
+    if (timeInfo.tm_sec%10 == 0)
     { // 60-second interval
         Serial.println();
         Serial.println("---------------------------------------------");
