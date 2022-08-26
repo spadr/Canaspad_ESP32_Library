@@ -30,11 +30,11 @@ bool Canaspad::write(struct tm &time_info, Tube &sensor_config)
     // DONE: Get timestamp from timeInfo
     struct tm now = time_info;
     char buf[20];
-    sprintf(buf, " %04d-%02d-%02d %02d:%02d:%02d",
+    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d",
           now.tm_year + 1900, now.tm_mon + 1, now.tm_mday,
           now.tm_hour, now.tm_min, now.tm_sec);
     timestamp_tz_t timestamp = String(buf);
-    return sensor_config.append(timestamp);
+    return sensor_config.add(timestamp);
 }
 
 http_code_t Canaspad::send(Tube &sensor_config)

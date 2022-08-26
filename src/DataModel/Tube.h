@@ -6,7 +6,7 @@
 //#include "..\Type.h"
 #include "..\ApiEndPoint.h"
 
-class Tube
+class Tube : public Element
 {
 public:
     uuid_t token;
@@ -15,7 +15,6 @@ public:
     int size;
     bool element_empty;
     bool token_empty;
-    Element element;
 
     float *float_value_ptr;
     int *int_value_ptr;
@@ -32,7 +31,7 @@ public:
     ~Tube();
 
     bool begin(String channel_, String name_);
-    bool append(timestamp_tz_t timestamp);
+    bool add(timestamp_tz_t timestamp);
     http_code_t send();
     void fetch(float *fresh_value);
     void fetch(int *fresh_value);

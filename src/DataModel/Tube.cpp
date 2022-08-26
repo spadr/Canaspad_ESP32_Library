@@ -1,4 +1,4 @@
-#include "Tube.h";
+#include "Tube.h"
 
 Tube::Tube(float *sensing_value)
 {
@@ -77,6 +77,7 @@ Tube::Tube(unsigned long *sensing_value)
 
 Tube::~Tube()
 {
+
 }
 
 bool Tube::begin(String channel_, String name_)
@@ -91,45 +92,44 @@ bool Tube::begin(String channel_, String name_)
     return true;
 }
 
-bool Tube::append(timestamp_tz_t timestamp)
+bool Tube::add(timestamp_tz_t timestamp)
 {
-    bool add = false;
     //TODO : Test
     if (float_value_ptr != nullptr)
     {
-        add = element.append(float_value_ptr, timestamp);
         size += 1;
         element_empty = false;
+        return append(float_value_ptr, timestamp);
     }
     else if (int_value_ptr != nullptr)
     {
-        add = element.append(int_value_ptr, timestamp);
         size += 1;
         element_empty = false;
+        return append(int_value_ptr, timestamp);
     }
     else if (long_value_ptr != nullptr)
     {
-        add = element.append(long_value_ptr, timestamp);
         size += 1;
         element_empty = false;
+        return append(long_value_ptr, timestamp);
     }
     else if (unsigned_int_value_ptr != nullptr)
     {
-        add = element.append(unsigned_int_value_ptr, timestamp);
         size += 1;
         element_empty = false;
+        return append(unsigned_int_value_ptr, timestamp);
     }
     else if (unsigned_long_value_ptr != nullptr)
     {
-        add = element.append(unsigned_long_value_ptr, timestamp);
         size += 1;
         element_empty = false;
+        return append(unsigned_long_value_ptr, timestamp);
     }
     else 
     {
         //Error
+        return false;
     }
-    return add;
 }
 
 

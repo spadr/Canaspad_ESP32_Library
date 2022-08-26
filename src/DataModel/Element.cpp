@@ -2,12 +2,14 @@
 
 Element::Element()
 {
-    this->timestamp = "";
     this->float_value = 0.0;
     this->int_value = 0;
     this->long_value = 0;
     this->unsigned_int_value = 0;
     this->unsigned_long_value = 0;
+
+    timestamp_tz_t unix = "1970-01-01 00:00:00";
+    this->timestamp = unix;
 }
 
 Element::~Element()
@@ -18,7 +20,7 @@ bool Element::append(float *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
     float value = *add_value;
-    Serial.println("Element::append " + String(value));//TODO : Test
+    Serial.println("Element::append " + String(value) + " " + String(timestamp_add));//TODO : Test
     return true;
 }
 
