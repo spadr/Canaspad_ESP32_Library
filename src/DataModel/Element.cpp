@@ -19,69 +19,69 @@ Element::~Element()
 bool Element::append(float *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    float value = *add_value;
-    Serial.println("Element::append " + String(value) + " " + String(timestamp_add));//TODO : Test
+    float_value = *add_value;
+    //DONE : Test code is in "/examples"
     return true;
 }
 
 bool Element::append(int *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    int value = *add_value;
-    Serial.println("Element::append " + String(value));//TODO : Test
+    int_value = *add_value;
+    //DONE : Test code is in "/examples"
     return true;
 }
 
 bool Element::append(long *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    long value = *add_value;
-    Serial.println("Element::append " + String(value));//TODO : Test
+    long_value = *add_value;
+    //DONE : Test code is in "/examples"
     return true;
 }
 
 bool Element::append(unsigned int *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    unsigned int value = *add_value;
-    Serial.println("Element::append " + String(value));//TODO : Test
+    unsigned_int_value = *add_value;
+    //DONE : Test code is in "/examples"
     return true;
 }
 
 bool Element::append(unsigned long *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    unsigned long value = *add_value;
-    Serial.println("Element::append " + String(value));//TODO : Test
+    unsigned_long_value = *add_value;
+    //DONE : Test code is in "/examples"
     return true;
 }
 
-void Element::get_value(float *value_p)
+bool Element::saved_value_is(float value)
 {
-    *value_p = float_value;
+    return value == float_value;
 }
 
-void Element::get_value(int *value_p)
+bool Element::saved_value_is(int value)
 {
-    *value_p = int_value;
+    return value == int_value;
 }
 
-void Element::get_value(long *value_p)
+bool Element::saved_value_is(long value)
 {
-    *value_p = long_value;
+    return value == long_value;
 }
 
-void Element::get_value(unsigned int *value_p)
+bool Element::saved_value_is(unsigned int value)
 {
-    *value_p = unsigned_int_value;
+    return value == unsigned_int_value;
 }
 
-void Element::get_value(unsigned long *value_p)
+bool Element::saved_value_is(unsigned long value)
 {
-    *value_p = unsigned_long_value;
+    return value == unsigned_long_value;
 }
 
-timestamp_tz_t Element::get_timestamp()
+timestamp_tz_t Element::saved_timestamp()
 {
     return timestamp;
 }

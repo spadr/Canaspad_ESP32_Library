@@ -8,10 +8,9 @@ const char *api_url = "Canaspad_project_in_supabase";
 const char *api_key = "anon_key";
 const char *api_username = "user@mail.com";
 const char *api_password = "password";
-const char* ntp_server = "ntp.nict.jp";
-const long gmt_offset_sec     = 0;
-const int daylight_offset_sec = 3600 * 9;
-
+const char *ntp_server = "ntp.nict.jp";
+const long  gmt_offset_sec     = 0;
+const int   daylight_offset_sec = 3600 * 9;
 
 Canaspad api(api_url, api_key, api_username, api_password);
 
@@ -26,6 +25,7 @@ void setup()
     M5.begin();
 
     Serial.begin(115200);
+
     
     WiFiMulti wifiMulti;
     wifiMulti.addAP(ssid, password);
@@ -52,9 +52,8 @@ void setup()
 void loop()
 {
     getLocalTime(&timeInfo);
-    if (timeInfo.tm_sec%10 == 0)
+    if (timeInfo.tm_sec == 0)
     { // 60-second interval
-        Serial.println();
         Serial.println("---------------------------------------------");
 
         // Get the measured value
@@ -65,7 +64,17 @@ void loop()
         // Add the measured values to Tube object
         api.write(timeInfo, voltage_sensor);
 
-        // Send data to API
+        // Check if saved in Tube object
+        if (voltage_sensor.saved_value_is(sensing_value))
+        {
+            Serial.println("Saved successfully!");
+        }
+        else
+        {
+            Serial.println("Failed to save!");
+        }
+
+        // Send data to Canaspad API
         http_code_t http_code = api.send(voltage_sensor);
         if (http_code == "201") // TODO : use enum
         {
@@ -77,12 +86,24 @@ void loop()
             Serial.println(http_code);
         }
 
-        // Getting values from API
+        // Getting values from Canaspad API
         float fresh_value;
         api.fetch(&fresh_value, voltage_sensor);
 
         Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", fresh_value);
+
+        // Check if saved in Canaspad API
+        if (sensing_value == fresh_value)
+        {
+            Serial.println("Synced successfully!");
+        }
+        else
+        {
+            Serial.println("Failed to sync!");
+        }
+
         Serial.println("---------------------------------------------");
+        Serial.println();
 
         delay(1000);
     }

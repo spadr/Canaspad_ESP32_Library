@@ -1,4 +1,5 @@
 #include "Canaspad.h"
+#include "ApiEndPoint.h"
 
 Canaspad::Canaspad(const char *url, const char *key, const char *username, const char *password)
 {
@@ -19,13 +20,13 @@ bool Canaspad::begin()
     return true;
 }
 
-bool Canaspad::set(String const channel, String const name, Tube &sensor_config)
+bool Canaspad::set(String const channel, String const name, Tube &sensor)
 {
-    bool foo = sensor_config.begin(channel, name);
+    bool foo = sensor.begin(channel, name);
     return foo;
 }
 
-bool Canaspad::write(struct tm &time_info, Tube &sensor_config)
+bool Canaspad::write(struct tm &time_info, Tube &sensor)
 {
     // DONE: Get timestamp from timeInfo
     struct tm now = time_info;
@@ -34,36 +35,38 @@ bool Canaspad::write(struct tm &time_info, Tube &sensor_config)
           now.tm_year + 1900, now.tm_mon + 1, now.tm_mday,
           now.tm_hour, now.tm_min, now.tm_sec);
     timestamp_tz_t timestamp = String(buf);
-    return sensor_config.add(timestamp);
+    return sensor.add(timestamp);
+    
 }
 
-http_code_t Canaspad::send(Tube &sensor_config)
+http_code_t Canaspad::send(Tube &sensor)
 {
-    http_code_t foo = sensor_config.send();
+    http_code_t foo = sensor.send();
     return foo;
 }
 
-void Canaspad::fetch(float *fresh_value_p, Tube &sensor_config)
+void Canaspad::fetch(float *fresh_value_p, Tube &sensor)
 {
-    sensor_config.fetch(fresh_value_p);
+    sensor.fetch(fresh_value_p);
 }
 
-void Canaspad::fetch(int *fresh_value_p, Tube &sensor_config)
+void Canaspad::fetch(int *fresh_value_p, Tube &sensor)
 {
-    sensor_config.fetch(fresh_value_p);
+    sensor.fetch(fresh_value_p);
 }
 
-void Canaspad::fetch(long *fresh_value_p, Tube &sensor_config)
+void Canaspad::fetch(long *fresh_value_p, Tube &sensor)
 {
-    sensor_config.fetch(fresh_value_p);
+    sensor.fetch(fresh_value_p);
 }
 
-void Canaspad::fetch(unsigned int *fresh_value_p, Tube &sensor_config)
+void Canaspad::fetch(unsigned int *fresh_value_p, Tube &sensor)
 {
-    sensor_config.fetch(fresh_value_p);
+    sensor.fetch(fresh_value_p);
 }
 
-void Canaspad::fetch(unsigned long *fresh_value_p, Tube &sensor_config)
+void Canaspad::fetch(unsigned long *fresh_value_p, Tube &sensor)
 {
-    sensor_config.fetch(fresh_value_p);
+    sensor.fetch(fresh_value_p);
 }
+

@@ -1,8 +1,6 @@
 #ifndef Element_h
 #define Element_h
 
-//#include <vector>
-//#include <iostream>
 #include "..\Type.h"
 
 class Element
@@ -24,13 +22,12 @@ public:
     bool append(unsigned int *add_value, timestamp_tz_t timestamp_add);
     bool append(unsigned long *add_value, timestamp_tz_t timestamp_add);
 
-    void get_value(float *value_p);
-    void get_value(int *value_p);
-    void get_value(long *value_p);
-    void get_value(unsigned int *value_p);
-    void get_value(unsigned long *value_p);
-
-    timestamp_tz_t get_timestamp();
+    bool saved_value_is(float value);
+    bool saved_value_is(int value);
+    bool saved_value_is(long value);
+    bool saved_value_is(unsigned int value);
+    bool saved_value_is(unsigned long value);
+    timestamp_tz_t saved_timestamp();
 };
 
 #endif
