@@ -6,11 +6,13 @@
 
 class Canaspad
 {
-public:
+private:
     const char *api_url;
     const char *api_key;
     const char *api_username;
     const char *api_password;
+    
+public:
     Canaspad(const char *url, const char *key, const char *username, const char *password);
     ~Canaspad();
 

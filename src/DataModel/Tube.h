@@ -7,7 +7,7 @@
 
 class Tube : public Element
 {
-public:
+private:
     uuid_t token;
     String channel;
     String name;
@@ -21,6 +21,7 @@ public:
     unsigned int *unsigned_int_value_ptr;
     unsigned long *unsigned_long_value_ptr;
 
+public:
     // DONE : Create a scheme for keeping data types
     Tube(float *sensing_value);
     Tube(int *sensing_value);

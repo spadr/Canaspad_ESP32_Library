@@ -99,31 +99,31 @@ bool Tube::add(timestamp_tz_t timestamp)
     {
         size += 1;
         element_empty = false;
-        return append(float_value_ptr, timestamp);
+        return Element::append(float_value_ptr, timestamp);
     }
     else if (int_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
-        return append(int_value_ptr, timestamp);
+        return Element::append(int_value_ptr, timestamp);
     }
     else if (long_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
-        return append(long_value_ptr, timestamp);
+        return Element::append(long_value_ptr, timestamp);
     }
     else if (unsigned_int_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
-        return append(unsigned_int_value_ptr, timestamp);
+        return Element::append(unsigned_int_value_ptr, timestamp);
     }
     else if (unsigned_long_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
-        return append(unsigned_long_value_ptr, timestamp);
+        return Element::append(unsigned_long_value_ptr, timestamp);
     }
     else 
     {

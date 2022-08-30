@@ -5,14 +5,14 @@
 
 class Element
 {
-public:
+private:
     float float_value;
     int int_value;
     long long_value;
     unsigned int unsigned_int_value;
     unsigned long unsigned_long_value;
-
     timestamp_tz_t timestamp;
+public:
     Element();
     ~Element();
 
