@@ -14,11 +14,12 @@ const int   daylight_offset_sec = 3600 * 9;
 
 Canaspad api(api_url, api_key, api_username, api_password);
 
-float sensing_value;
-Tube voltage_sensor(&sensing_value);
+float measured_value;
+Tube voltage_sensor(&measured_value);
 
 #define PIN 36
 struct tm timeInfo;
+http_code_t http_code;
 
 void setup()
 {
@@ -26,7 +27,6 @@ void setup()
 
     Serial.begin(115200);
 
-    
     WiFiMulti wifiMulti;
     wifiMulti.addAP(ssid, password);
     while (wifiMulti.run() != WL_CONNECTED)
@@ -35,16 +35,31 @@ void setup()
         Serial.println("Connecting to WiFi..");
     }
 
-    if (not api.begin())
-    {
-        Serial.println("Connection Faild");
-        while (1)
-        {
-        };
-    }
+    // Login to Canaspad API
+    http_code = api.login();
 
+    // TEST: Check HTTP status code
+    if (http_code == "200")// TODO : use enum
+    {
+        Serial.println("Loggedin successfully!");
+    }
+    else
+    {
+        Serial.println("Failed to login!");
+    }
+    
     // Get the Tube token
-    api.set("ch01", "name01", voltage_sensor);
+    http_code = api.token("ch01", "name01", voltage_sensor);
+
+    // TEST: Check HTTP status code
+    if (http_code == "201")// TODO : use enum
+    {
+        Serial.println("Received Tube token successfully!");
+    }
+    else
+    {
+        Serial.println("Failed to receive Tube token!");
+    }
 
     configTime(gmt_offset_sec, daylight_offset_sec, ntp_server);
 }
@@ -56,16 +71,13 @@ void loop()
     { // 60-second interval
         Serial.println("---------------------------------------------");
 
-        // Get the measured value
-        sensing_value = (analogRead(PIN) + 1) * 3.3 * 1000 / (4095 + 1);
-
-        Serial.printf("Voltage: %2.2fmV\r\n", sensing_value);
-
-        // Add the measured values to Tube object
+        // Add the measured value to Tube object
+        measured_value = (analogRead(PIN) + 1) * 3.3 * 1000 / (4095 + 1);
+        Serial.printf("Voltage: %2.2fmV\r\n", measured_value);
         api.write(timeInfo, voltage_sensor);
 
-        // Check if saved in Tube object
-        if (voltage_sensor.saved_value_is(sensing_value))
+        // TEST: Check if saved in Tube object
+        if (voltage_sensor.saved_value_is(measured_value))
         {
             Serial.println("Saved successfully!");
         }
@@ -75,25 +87,25 @@ void loop()
         }
 
         // Send data to Canaspad API
-        http_code_t http_code = api.send(voltage_sensor);
-        if (http_code == "201") // TODO : use enum
+        http_code = api.send(voltage_sensor);
+
+        // TEST: Check HTTP status code
+        if (http_code == "201")// TODO : use enum
         {
-            Serial.println("HTTP request succeeded!");
+            Serial.println("Sent saved value successfully!");
         }
         else
         {
-            Serial.print("Error on HTTP request! HttpCode : ");
-            Serial.println(http_code);
+            Serial.println("Failed to send saved value!");
         }
 
         // Getting values from Canaspad API
         float fresh_value;
         api.fetch(&fresh_value, voltage_sensor);
-
         Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", fresh_value);
 
-        // Check if saved in Canaspad API
-        if (sensing_value == fresh_value)
+        // TEST: Check if saved in Canaspad API
+        if (measured_value == fresh_value)
         {
             Serial.println("Synced successfully!");
         }

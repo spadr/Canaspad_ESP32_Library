@@ -14,8 +14,8 @@ public:
     Canaspad(const char *url, const char *key, const char *username, const char *password);
     ~Canaspad();
 
-    bool begin();
-    bool set(String const channel, String const name, Tube &sensor);
+    http_code_t login();
+    http_code_t token(String const channel, String const name, Tube &sensor);
     bool write(struct tm &time_info, Tube &sensor);
     http_code_t send(Tube &sensor);
     void fetch(float *fresh_value, Tube &sensor);
