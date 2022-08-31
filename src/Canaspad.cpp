@@ -14,18 +14,16 @@ Canaspad::~Canaspad()
     // TODO: sign out
 }
 
-http_code_t Canaspad::login()
+int Canaspad::login()
 {
     // TODO: sign in
-    http_code_t r = "Disconnected";
-    return r;
+    return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 
-http_code_t Canaspad::token(String const channel, String const name, Tube &sensor)
+int Canaspad::token(String const channel, String const name, Tube &sensor)
 {
     bool foo = sensor.begin(channel, name);
-    http_code_t r = "Disconnected";
-    return r;
+    return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 
 bool Canaspad::write(struct tm &time_info, Tube &sensor)
@@ -41,11 +39,10 @@ bool Canaspad::write(struct tm &time_info, Tube &sensor)
     
 }
 
-http_code_t Canaspad::send(Tube &sensor)
+int Canaspad::send(Tube &sensor)
 {
-    http_code_t foo = sensor.send();
-    http_code_t r = "Disconnected";
-    return r;
+    uint8_t foo = sensor.send();
+    return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 
 void Canaspad::fetch(float *fresh_value_p, Tube &sensor)

@@ -16,10 +16,10 @@ public:
     Canaspad(const char *url, const char *key, const char *username, const char *password);
     ~Canaspad();
 
-    http_code_t login();
-    http_code_t token(String const channel, String const name, Tube &sensor);
+    int login();
+    int token(String const channel, String const name, Tube &sensor);
     bool write(struct tm &time_info, Tube &sensor);
-    http_code_t send(Tube &sensor);
+    int send(Tube &sensor);
     void fetch(float *fresh_value, Tube &sensor);
     void fetch(int *fresh_value, Tube &sensor);
     void fetch(long *fresh_value, Tube &sensor);

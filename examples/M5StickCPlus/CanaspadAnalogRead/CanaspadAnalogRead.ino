@@ -19,7 +19,7 @@ Tube voltage_sensor(&measured_value);
 
 #define PIN 36
 struct tm timeInfo;
-http_code_t http_code;
+uint8_t http_code;
 
 void setup()
 {

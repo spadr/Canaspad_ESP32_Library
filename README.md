@@ -148,7 +148,7 @@ int Canaspad::send(Tube &sensor_config);
 
 ### Return value
 
-- http_code_t **HttpCode**
+- uint8_t **HttpCode**
     
     HTTP Status Code
 

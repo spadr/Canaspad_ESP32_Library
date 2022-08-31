@@ -32,7 +32,7 @@ public:
 
     bool begin(String channel_, String name_);
     bool add(timestamp_tz_t timestamp);
-    http_code_t send();
+    int send();
     void fetch(float *fresh_value);
     void fetch(int *fresh_value);
     void fetch(long *fresh_value);

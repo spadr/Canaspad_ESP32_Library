@@ -133,7 +133,7 @@ bool Tube::add(timestamp_tz_t timestamp)
 }
 
 
-http_code_t Tube::send()
+int Tube::send()
 {
     if (!token_empty)
     {
@@ -168,8 +168,7 @@ http_code_t Tube::send()
     }
     size = 0;
     element_empty = true;
-    http_code_t r = "201";
-    return r;
+    return HttpStatus::toInt(HttpStatus::Code::Created);
 }
 
 void Tube::fetch(float *fresh_value)
