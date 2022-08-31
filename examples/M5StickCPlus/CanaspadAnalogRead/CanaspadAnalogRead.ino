@@ -19,7 +19,6 @@ Tube voltage_sensor(&measured_value);
 
 #define PIN 36
 struct tm timeInfo;
-uint8_t http_code;
 
 void setup()
 {
@@ -36,10 +35,7 @@ void setup()
     }
 
     // Login to Canaspad API
-    http_code = api.login();
-
-    // TEST: Check HTTP status code
-    if (http_code == "200")// TODO : use enum
+    if (api.login() == 200)// TEST: Check HTTP status code
     {
         Serial.println("Loggedin successfully!");
     }
@@ -49,10 +45,7 @@ void setup()
     }
     
     // Get the Tube token
-    http_code = api.token("ch01", "name01", voltage_sensor);
-
-    // TEST: Check HTTP status code
-    if (http_code == "201")// TODO : use enum
+    if (api.token("ch01", "name01", voltage_sensor) == 201)// TEST: Check HTTP status code
     {
         Serial.println("Received Tube token successfully!");
     }
@@ -87,16 +80,13 @@ void loop()
         }
 
         // Send data to Canaspad API
-        http_code = api.send(voltage_sensor);
-
-        // TEST: Check HTTP status code
-        if (http_code == "201")// TODO : use enum
+        if (api.send(voltage_sensor) == 201)// TEST: Check HTTP status code
         {
-            Serial.println("Sent saved value successfully!");
+            Serial.println("Sent saved_value successfully!");
         }
         else
         {
-            Serial.println("Failed to send saved value!");
+            Serial.println("Failed to send saved_value!");
         }
 
         // Getting values from Canaspad API
