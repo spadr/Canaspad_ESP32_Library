@@ -13,6 +13,7 @@ Tube::Tube(float *sensing_value)
     this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
+    this->timestamp_empty = true;
 }
 
 Tube::Tube(int *sensing_value)
@@ -28,6 +29,7 @@ Tube::Tube(int *sensing_value)
     this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
+    this->timestamp_empty = true;
 }
 
 Tube::Tube(long *sensing_value)
@@ -43,6 +45,7 @@ Tube::Tube(long *sensing_value)
     this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
+    this->timestamp_empty = true;
 }
 
 Tube::Tube(unsigned int *sensing_value)
@@ -58,6 +61,7 @@ Tube::Tube(unsigned int *sensing_value)
     this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
+    this->timestamp_empty = true;
 }
 
 Tube::Tube(unsigned long *sensing_value)
@@ -73,73 +77,129 @@ Tube::Tube(unsigned long *sensing_value)
     this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
+    this->timestamp_empty = true;
 }
 
 Tube::~Tube()
 {
-
 }
 
-bool Tube::begin(String channel_, String name_)
+bool Tube::begin(String _channel, String _name, uuid_t _token)
 {
-    channel = channel_;
-    name = name_;
-
-    // TODO: Get TUBE record if channel and name exist
-
-    token = "token";
+    channel = _channel;
+    name = _name;
+    token = _token;
     token_empty = false;
     return true;
 }
 
 bool Tube::add(timestamp_tz_t timestamp)
 {
-    //TODO : Test
+    // TODO : Test
     if (float_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
+        timestamp_empty = false;
         return Element::append(float_value_ptr, timestamp);
     }
     else if (int_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
+        timestamp_empty = false;
         return Element::append(int_value_ptr, timestamp);
     }
     else if (long_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
+        timestamp_empty = false;
         return Element::append(long_value_ptr, timestamp);
     }
     else if (unsigned_int_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
+        timestamp_empty = false;
         return Element::append(unsigned_int_value_ptr, timestamp);
     }
     else if (unsigned_long_value_ptr != nullptr)
     {
         size += 1;
         element_empty = false;
+        timestamp_empty = false;
         return Element::append(unsigned_long_value_ptr, timestamp);
     }
-    else 
+    else
     {
-        //Error
+        // Error
         return false;
     }
 }
 
+void Tube::latest_value(float *pick_value)
+{
+    if (element_empty)
+    {
+        // Error
+    }
+    Element::pick_value(pick_value);
+}
 
-int Tube::send()
+void Tube::latest_value(int *pick_value)
+{
+    if (element_empty)
+    {
+        // Error
+    }
+    Element::pick_value(pick_value);
+}
+
+void Tube::latest_value(long *pick_value)
+{
+    if (element_empty)
+    {
+        // Error
+    }
+    Element::pick_value(pick_value);
+}
+
+void Tube::latest_value(unsigned int *pick_value)
+{
+    if (element_empty)
+    {
+        // Error
+    }
+    Element::pick_value(pick_value);
+}
+
+void Tube::latest_value(unsigned long *pick_value)
+{
+    if (element_empty)
+    {
+        // Error
+    }
+    Element::pick_value(pick_value);
+}
+
+timestamp_tz_t Tube::latest_timestamp()
+{
+    if (timestamp_empty)
+    {
+        // Error
+    }
+    return Element::pick_timestamp();
+}
+
+/*
+json_t Tube::json_parse()
 {
     if (!token_empty)
     {
         // TODO: Post Tube record
         // use ArduinoJson
-        /*
+
         if (float_value_ptr != nullptr)
         {
             Serial.println("float");
@@ -164,39 +224,9 @@ int Tube::send()
         {
             Serial.println("unknown");
         }
-        */
-    }
-    size = 0;
-    element_empty = true;
-    return HttpStatus::toInt(HttpStatus::Code::Created);
-}
 
-void Tube::fetch(float *fresh_value)
-{
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    *fresh_value = 3.9;
 }
-
-void Tube::fetch(int *fresh_value)
-{
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    *fresh_value = -39;
+size = 0;
+element_empty = true;
 }
-
-void Tube::fetch(long *fresh_value)
-{
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    *fresh_value = -339;
-}
-
-void Tube::fetch(unsigned int *fresh_value)
-{
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    *fresh_value = 39;
-}
-
-void Tube::fetch(unsigned long *fresh_value)
-{
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    *fresh_value = 339;
-}
+*/

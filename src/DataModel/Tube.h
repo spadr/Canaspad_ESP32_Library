@@ -4,7 +4,6 @@
 //#include <ArduinoJson.h>
 #include "Element.h"
 
-
 class Tube : public Element
 {
 private:
@@ -14,6 +13,7 @@ private:
     int size;
     bool element_empty;
     bool token_empty;
+    bool timestamp_empty;
 
     float *float_value_ptr;
     int *int_value_ptr;
@@ -30,14 +30,15 @@ public:
     Tube(unsigned long *sensing_value);
     ~Tube();
 
-    bool begin(String channel_, String name_);
+    // DONE : DataModel saves and analyzes the values
+    bool begin(String _channel, String _name, uuid_t _token);
     bool add(timestamp_tz_t timestamp);
-    int send();
-    void fetch(float *fresh_value);
-    void fetch(int *fresh_value);
-    void fetch(long *fresh_value);
-    void fetch(unsigned int *fresh_value);
-    void fetch(unsigned long *fresh_value);
+    void latest_value(float *pick_value);
+    void latest_value(int *pick_value);
+    void latest_value(long *pick_value);
+    void latest_value(unsigned int *pick_value);
+    void latest_value(unsigned long *pick_value);
+    timestamp_tz_t latest_timestamp();
 };
 
 #endif

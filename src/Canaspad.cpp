@@ -22,7 +22,8 @@ int Canaspad::login()
 
 int Canaspad::token(String const channel, String const name, Tube &sensor)
 {
-    bool foo = sensor.begin(channel, name);
+    uuid_t token = "token"; // TODO: Get TUBE record if channel and name exist
+    sensor.begin(channel, name, token);
     return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 
@@ -32,41 +33,46 @@ bool Canaspad::write(struct tm &time_info, Tube &sensor)
     struct tm now = time_info;
     char buf[20];
     sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d",
-          now.tm_year + 1900, now.tm_mon + 1, now.tm_mday,
-          now.tm_hour, now.tm_min, now.tm_sec);
+            now.tm_year + 1900, now.tm_mon + 1, now.tm_mday,
+            now.tm_hour, now.tm_min, now.tm_sec);
     timestamp_tz_t timestamp = String(buf);
     return sensor.add(timestamp);
-    
 }
 
 int Canaspad::send(Tube &sensor)
 {
-    uint8_t foo = sensor.send();
+    float _value;
+    sensor.latest_value(&_value);
+    timestamp_tz_t _timestamp = sensor.latest_timestamp();
     return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 
 void Canaspad::fetch(float *fresh_value_p, Tube &sensor)
 {
-    sensor.fetch(fresh_value_p);
+    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    *fresh_value_p = 3.9;
 }
 
 void Canaspad::fetch(int *fresh_value_p, Tube &sensor)
 {
-    sensor.fetch(fresh_value_p);
+    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    *fresh_value_p = -39;
 }
 
 void Canaspad::fetch(long *fresh_value_p, Tube &sensor)
 {
-    sensor.fetch(fresh_value_p);
+    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    *fresh_value_p = -339;
 }
 
 void Canaspad::fetch(unsigned int *fresh_value_p, Tube &sensor)
 {
-    sensor.fetch(fresh_value_p);
+    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    *fresh_value_p = 39;
 }
 
 void Canaspad::fetch(unsigned long *fresh_value_p, Tube &sensor)
 {
-    sensor.fetch(fresh_value_p);
+    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    *fresh_value_p = 339;
 }
-
