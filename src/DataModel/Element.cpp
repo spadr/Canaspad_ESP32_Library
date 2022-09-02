@@ -8,7 +8,7 @@ Element::Element()
     this->unsigned_int_value = 0;
     this->unsigned_long_value = 0;
 
-    timestamp_tz_t unix = "1970-01-01 00:00:00";
+    timestamp_tz_t unix = "1970-01-01 00:00:00+09";
     this->timestamp = unix;
 }
 

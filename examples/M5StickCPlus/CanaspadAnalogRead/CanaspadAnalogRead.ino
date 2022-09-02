@@ -9,10 +9,10 @@ const char *api_key = "anon_key";
 const char *api_username = "user@mail.com";
 const char *api_password = "password";
 const char *ntp_server = "ntp.nict.jp";
-const long  gmt_offset_sec     = 0;
-const int   daylight_offset_sec = 3600 * 9;
+const long gmt_offset_sec = 3600 * 9;
+const int daylight_offset_sec = 0;
 
-Canaspad api(api_url, api_key, api_username, api_password);
+Canaspad api(api_url, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
 
 float measured_value;
 Tube voltage_sensor(&measured_value);
@@ -22,8 +22,6 @@ struct tm timeInfo;
 
 void setup()
 {
-    M5.begin();
-
     Serial.begin(115200);
 
     WiFiMulti wifiMulti;
@@ -35,7 +33,7 @@ void setup()
     }
 
     // Login to Canaspad API
-    if (api.login() == 200)// TEST: Check HTTP status code
+    if (api.login() == 200) // Check HTTP status code
     {
         Serial.println("Loggedin successfully!");
     }
@@ -43,9 +41,9 @@ void setup()
     {
         Serial.println("Failed to login!");
     }
-    
+
     // Get the Tube token
-    if (api.token("ch01", "name01", voltage_sensor) == 201)// TEST: Check HTTP status code
+    if (api.token("ch01", "name01", voltage_sensor) == 201) // Check HTTP status code
     {
         Serial.println("Received Tube token successfully!");
     }
@@ -69,7 +67,7 @@ void loop()
         Serial.printf("Voltage: %2.2fmV\r\n", measured_value);
         api.write(timeInfo, voltage_sensor);
 
-        // TEST: Check if saved in Tube object
+        // Check if saved in Tube object
         if (voltage_sensor.saved_value_is(measured_value))
         {
             Serial.println("Saved successfully!");
@@ -80,7 +78,7 @@ void loop()
         }
 
         // Send data to Canaspad API
-        if (api.send(voltage_sensor) == 201)// TEST: Check HTTP status code
+        if (api.send(voltage_sensor) == 201) // Check HTTP status code
         {
             Serial.println("Sent saved_value successfully!");
         }
@@ -94,7 +92,7 @@ void loop()
         api.fetch(&fresh_value, voltage_sensor);
         Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", fresh_value);
 
-        // TEST: Check if saved in Canaspad API
+        // Check if saved in Canaspad API
         if (measured_value == fresh_value)
         {
             Serial.println("Synced successfully!");

@@ -1,12 +1,13 @@
 #include "Canaspad.h"
 #include "ApiEndPoint.h"
 
-Canaspad::Canaspad(const char *url, const char *key, const char *username, const char *password)
+Canaspad::Canaspad(const char *url, const char *key, const char *username, const char *password, const long offset_sec)
 {
     this->api_url = url;
     this->api_key = key;
     this->api_username = username;
     this->api_password = password;
+    this->offset_hour = offset_sec / 3600;
 }
 
 Canaspad::~Canaspad()
@@ -31,10 +32,10 @@ bool Canaspad::write(struct tm &time_info, Tube &sensor)
 {
     // DONE: Get timestamp from timeInfo
     struct tm now = time_info;
-    char buf[20];
-    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d",
+    char buf[23];
+    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d+%02d",
             now.tm_year + 1900, now.tm_mon + 1, now.tm_mday,
-            now.tm_hour, now.tm_min, now.tm_sec);
+            now.tm_hour, now.tm_min, now.tm_sec, Canaspad::offset_hour);
     timestamp_tz_t timestamp = String(buf);
     return sensor.add(timestamp);
 }
