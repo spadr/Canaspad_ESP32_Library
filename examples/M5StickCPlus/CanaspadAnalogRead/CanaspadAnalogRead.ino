@@ -65,10 +65,11 @@ void loop()
         // Add the measured value to Tube object
         measured_value = (analogRead(PIN) + 1) * 3.3 * 1000 / (4095 + 1);
         Serial.printf("Voltage: %2.2fmV\r\n", measured_value);
-        api.write(timeInfo, voltage_sensor);
+        api.write(voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday, timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
 
         // Check if saved in Tube object
-        if (voltage_sensor.saved_value_is(measured_value))
+        timestamp_tz_t now = api._make_timestamp_tz(timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday, timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
+        if (voltage_sensor.saved_value_is(measured_value) && voltage_sensor.saved_timestamp_is(now))
         {
             Serial.println("Saved successfully!");
         }

@@ -116,7 +116,7 @@ bool Element::saved_value_is(unsigned long value)
     return value == unsigned_long_value;
 }
 
-timestamp_tz_t Element::saved_timestamp()
+bool Element::saved_timestamp_is(timestamp_tz_t timestamp)
 {
-    return timestamp;
+    return timestamp == this->timestamp;
 }

@@ -35,7 +35,7 @@ public:
     bool saved_value_is(long value);
     bool saved_value_is(unsigned int value);
     bool saved_value_is(unsigned long value);
-    timestamp_tz_t saved_timestamp();
+    bool saved_timestamp_is(timestamp_tz_t timestamp);
 };
 
 #endif
