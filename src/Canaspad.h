@@ -6,23 +6,29 @@
 
 class Canaspad
 {
-public:
+private:
     const char *api_url;
     const char *api_key;
     const char *api_username;
     const char *api_password;
-    Canaspad(const char *url, const char *key, const char *username, const char *password);
+
+public:
+    Canaspad(const char *url, const char *key, const char *username, const char *password, const long offset_sec);
     ~Canaspad();
 
-    bool begin();
-    bool set(String const channel, String const name, Tube &sensor_config);
-    bool write(struct tm &timeInfo, Tube &sensor_config);
-    http_code_t send(Tube &sensor_config);
-    void fetch(float *fresh_value, Tube &sensor_config);
-    void fetch(int *fresh_value, Tube &sensor_config);
-    void fetch(long *fresh_value, Tube &sensor_config);
-    void fetch(unsigned int *fresh_value, Tube &sensor_config);
-    void fetch(unsigned long *fresh_value, Tube &sensor_config);
+    int offset_hour;
+
+    int login();
+    int token(String const channel, String const name, Tube &sensor);
+    bool write(Tube &sensor, int year, int month, int day, int hour, int minute, int second, int utc_offset_hour);
+    int send(Tube &sensor);
+    void fetch(float *fresh_value, Tube &sensor);
+    void fetch(int *fresh_value, Tube &sensor);
+    void fetch(long *fresh_value, Tube &sensor);
+    void fetch(unsigned int *fresh_value, Tube &sensor);
+    void fetch(unsigned long *fresh_value, Tube &sensor);
+
+    timestamp_tz_t _make_timestamp_tz(int year, int month, int day, int hour, int minute, int second, int utc_offset_hour);
 };
 
 #endif

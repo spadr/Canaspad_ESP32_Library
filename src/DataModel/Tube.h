@@ -3,19 +3,17 @@
 
 //#include <ArduinoJson.h>
 #include "Element.h"
-//#include "..\Type.h"
-#include "..\ApiEndPoint.h"
 
-class Tube
+class Tube : public Element
 {
-public:
+private:
     uuid_t token;
     String channel;
     String name;
     int size;
     bool element_empty;
     bool token_empty;
-    Element element;
+    bool timestamp_empty;
 
     float *float_value_ptr;
     int *int_value_ptr;
@@ -23,6 +21,7 @@ public:
     unsigned int *unsigned_int_value_ptr;
     unsigned long *unsigned_long_value_ptr;
 
+public:
     // DONE : Create a scheme for keeping data types
     Tube(float *sensing_value);
     Tube(int *sensing_value);
@@ -31,14 +30,15 @@ public:
     Tube(unsigned long *sensing_value);
     ~Tube();
 
-    bool begin(String channel_, String name_);
-    bool append(timestamp_tz_t timestamp);
-    http_code_t send();
-    void fetch(float *fresh_value);
-    void fetch(int *fresh_value);
-    void fetch(long *fresh_value);
-    void fetch(unsigned int *fresh_value);
-    void fetch(unsigned long *fresh_value);
+    // DONE : DataModel saves and analyzes the values
+    bool begin(String _channel, String _name, uuid_t _token);
+    bool add(timestamp_tz_t timestamp);
+    void latest_value(float *pick_value);
+    void latest_value(int *pick_value);
+    void latest_value(long *pick_value);
+    void latest_value(unsigned int *pick_value);
+    void latest_value(unsigned long *pick_value);
+    timestamp_tz_t latest_timestamp();
 };
 
 #endif

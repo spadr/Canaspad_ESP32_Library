@@ -7,11 +7,11 @@ class ApiEndPoint
 {
 public:
     // Gotrue
-    url_t auth = "/token";
+    url_t auth_url = "/token";
     // Postgres
-    url_t tube = "/tube";                    // need to auth
-    url_t element = "/element";              // need to auth
-    url_t fresh_element = "/fresh_elements"; // need to auth
+    url_t tube_url = "/tube";                    // need to auth
+    url_t element_url = "/element";              // need to auth
+    url_t fresh_element_url = "/fresh_elements"; // need to auth
 };
 
 #endif

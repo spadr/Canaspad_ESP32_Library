@@ -8,19 +8,22 @@ const char *api_url = "Canaspad_project_in_supabase";
 const char *api_key = "anon_key";
 const char *api_username = "user@mail.com";
 const char *api_password = "password";
+const char *ntp_server = "ntp.nict.jp";
+const long gmt_offset_sec = 3600 * 9;
+const int daylight_offset_sec = 0;
 
-float sensing_value;
-Tube voltage_sensor(&sensing_value);
+Canaspad api(api_url, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
+
+float measured_value;
+Tube voltage_sensor(&measured_value);
 
 #define PIN 36
 struct tm timeInfo;
 
 void setup()
 {
-    M5.begin();
-
     Serial.begin(115200);
-    
+
     WiFiMulti wifiMulti;
     wifiMulti.addAP(ssid, password);
     while (wifiMulti.run() != WL_CONNECTED)
@@ -29,18 +32,27 @@ void setup()
         Serial.println("Connecting to WiFi..");
     }
 
-    if (not api.begin())
+    // Login to Canaspad API
+    if (api.login() == 200) // Check HTTP status code
     {
-        Serial.println("Connection Faild");
-        while (1)
-        {
-        };
+        Serial.println("Loggedin successfully!");
+    }
+    else
+    {
+        Serial.println("Failed to login!");
     }
 
     // Get the Tube token
-    api.set("ch01", "name01", voltage_sensor);
+    if (api.token("ch01", "name01", voltage_sensor) == 201) // Check HTTP status code
+    {
+        Serial.println("Received Tube token successfully!");
+    }
+    else
+    {
+        Serial.println("Failed to receive Tube token!");
+    }
 
-    configTime(9 * 3600L, 0, "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp");
+    configTime(gmt_offset_sec, daylight_offset_sec, ntp_server);
 }
 
 void loop()
@@ -48,35 +60,51 @@ void loop()
     getLocalTime(&timeInfo);
     if (timeInfo.tm_sec == 0)
     { // 60-second interval
-        Serial.println();
         Serial.println("---------------------------------------------");
 
-        // Get the measured value
-        sensing_value = (analogRead(PIN) + 1) * 3.3 * 1000 / (4095 + 1);
+        // Add the measured value to Tube object
+        measured_value = (analogRead(PIN) + 1) * 3.3 * 1000 / (4095 + 1);
+        Serial.printf("Voltage: %2.2fmV\r\n", measured_value);
+        api.write(voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday, timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
 
-        Serial.printf("Voltage: %2.2fmV\r\n", sensing_value);
-
-        // Add the measured values to Tube object
-        api.write(timeInfo, voltage_sensor);
-
-        // Send data to API
-        http_code_t http_code = api.send(voltage_sensor);
-        if (http_code == "201") // TODO : use enum
+        // Check if saved in Tube object
+        timestamp_tz_t now = api._make_timestamp_tz(timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday, timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
+        if (voltage_sensor.saved_value_is(measured_value) && voltage_sensor.saved_timestamp_is(now))
         {
-            Serial.println("HTTP request succeeded!");
+            Serial.println("Saved successfully!");
         }
         else
         {
-            Serial.print("Error on HTTP request! HttpCode : ");
-            Serial.println(http_code);
+            Serial.println("Failed to save!");
         }
 
-        // Getting values from API
+        // Send data to Canaspad API
+        if (api.send(voltage_sensor) == 201) // Check HTTP status code
+        {
+            Serial.println("Sent saved_value successfully!");
+        }
+        else
+        {
+            Serial.println("Failed to send saved_value!");
+        }
+
+        // Getting values from Canaspad API
         float fresh_value;
         api.fetch(&fresh_value, voltage_sensor);
-
         Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", fresh_value);
+
+        // Check if saved in Canaspad API
+        if (measured_value == fresh_value)
+        {
+            Serial.println("Synced successfully!");
+        }
+        else
+        {
+            Serial.println("Failed to sync!");
+        }
+
         Serial.println("---------------------------------------------");
+        Serial.println();
 
         delay(1000);
     }
