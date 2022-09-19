@@ -1,7 +1,7 @@
 #ifndef Canaspad_h
 #define Canaspad_h
 
-#include "DataModel\Tube.h"
+#include "DataModel/Tube.h"
 #include "Type.h"
 
 class Canaspad
