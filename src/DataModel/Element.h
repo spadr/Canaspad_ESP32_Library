@@ -1,7 +1,7 @@
 #ifndef Element_h
 #define Element_h
 
-#include "..\Type.h"
+#include "../Type.h"
 
 class Element
 {
