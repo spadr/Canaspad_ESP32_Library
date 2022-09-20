@@ -2,15 +2,12 @@
 #define Element_h
 
 #include "../Type.h"
+#include "Nucleus.h"
 
 class Element
 {
 private:
-    float float_value;
-    int int_value;
-    long long_value;
-    unsigned int unsigned_int_value;
-    unsigned long unsigned_long_value;
+    Nucleus nucleus;
     timestamp_tz_t timestamp;
 
 public:

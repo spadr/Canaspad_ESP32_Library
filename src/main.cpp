@@ -1,6 +1,7 @@
 #include <WiFiMulti.h>
 #include "Canaspad.h"
 #include "ConfigExample.h"
+// #include "Config.h"
 
 Canaspad api(api_url, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
 
@@ -48,7 +49,7 @@ void setup()
 void loop()
 {
     getLocalTime(&timeInfo);
-    if (timeInfo.tm_sec == 0)
+    if (timeInfo.tm_sec % 10 == 0)
     { // 60-second interval
         Serial.println("---------------------------------------------");
 
