@@ -37,8 +37,8 @@ bool Canaspad::write(Tube &sensor, int year, int month, int day, int hour, int m
 int Canaspad::send(Tube &sensor)
 {
     float _value;
-    sensor.latest_value(&_value);
-    timestamp_tz_t _timestamp = sensor.latest_timestamp();
+    sensor.value(&_value);
+    timestamp_tz_t _timestamp = sensor.timestamp();
     return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 

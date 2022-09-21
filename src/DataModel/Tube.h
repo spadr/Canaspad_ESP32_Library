@@ -33,12 +33,12 @@ public:
     // DONE : DataModel saves and analyzes the values
     bool begin(String channel, String name, uuid_t token);
     bool add(timestamp_tz_t timestamp);
-    void latest_value(float *pick_value);
-    void latest_value(int *pick_value);
-    void latest_value(long *pick_value);
-    void latest_value(unsigned int *pick_value);
-    void latest_value(unsigned long *pick_value);
-    timestamp_tz_t latest_timestamp();
+    void value(float *pick_value);
+    void value(int *pick_value);
+    void value(long *pick_value);
+    void value(unsigned int *pick_value);
+    void value(unsigned long *pick_value);
+    timestamp_tz_t timestamp();
 };
 
 #endif

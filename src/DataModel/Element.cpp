@@ -13,7 +13,7 @@ Element::~Element()
 bool Element::append(float *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    nucleus.putFloat(*add_value);
+    nucleus.put_float(*add_value);
     // DONE : Test code is in "/examples"
     return true;
 }
@@ -21,7 +21,7 @@ bool Element::append(float *add_value, timestamp_tz_t timestamp_add)
 bool Element::append(int *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    nucleus.putInt(*add_value);
+    nucleus.put_int(*add_value);
     // DONE : Test code is in "/examples"
     return true;
 }
@@ -29,7 +29,7 @@ bool Element::append(int *add_value, timestamp_tz_t timestamp_add)
 bool Element::append(long *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    nucleus.putLong(*add_value);
+    nucleus.put_long(*add_value);
     // DONE : Test code is in "/examples"
     return true;
 }
@@ -37,7 +37,7 @@ bool Element::append(long *add_value, timestamp_tz_t timestamp_add)
 bool Element::append(unsigned int *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    nucleus.putUnsignedInt(*add_value);
+    nucleus.put_unsigned_int(*add_value);
     // DONE : Test code is in "/examples"
     return true;
 }
@@ -45,38 +45,38 @@ bool Element::append(unsigned int *add_value, timestamp_tz_t timestamp_add)
 bool Element::append(unsigned long *add_value, timestamp_tz_t timestamp_add)
 {
     timestamp = timestamp_add;
-    nucleus.putUnsignedLong(*add_value);
+    nucleus.put_unsigned_long(*add_value);
     // DONE : Test code is in "/examples"
     return true;
 }
 
 bool Element::pick_value(float *_value)
 {
-    *_value = nucleus.getFloat();
+    *_value = nucleus.get_float();
     return true;
 }
 
 bool Element::pick_value(int *_value)
 {
-    *_value = nucleus.getInt();
+    *_value = nucleus.get_int();
     return true;
 }
 
 bool Element::pick_value(long *_value)
 {
-    *_value = nucleus.getLong();
+    *_value = nucleus.get_long();
     return true;
 }
 
 bool Element::pick_value(unsigned int *_value)
 {
-    *_value = nucleus.getUnsignedInt();
+    *_value = nucleus.get_unsigned_int();
     return true;
 }
 
 bool Element::pick_value(unsigned long *_value)
 {
-    *_value = nucleus.getUnsignedLong();
+    *_value = nucleus.get_unsigned_long();
     return true;
 }
 
@@ -87,27 +87,27 @@ timestamp_tz_t Element::pick_timestamp()
 
 bool Element::saved_value_is(float value)
 {
-    return value == nucleus.getFloat();
+    return value == nucleus.get_float();
 }
 
 bool Element::saved_value_is(int value)
 {
-    return value == nucleus.getInt();
+    return value == nucleus.get_int();
 }
 
 bool Element::saved_value_is(long value)
 {
-    return value == nucleus.getLong();
+    return value == nucleus.get_long();
 }
 
 bool Element::saved_value_is(unsigned int value)
 {
-    return value == nucleus.getUnsignedInt();
+    return value == nucleus.get_unsigned_int();
 }
 
 bool Element::saved_value_is(unsigned long value)
 {
-    return value == nucleus.getUnsignedLong();
+    return value == nucleus.get_unsigned_long();
 }
 
 bool Element::saved_timestamp_is(timestamp_tz_t timestamp)

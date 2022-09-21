@@ -128,7 +128,7 @@ bool Tube::add(timestamp_tz_t timestamp)
     }
 }
 
-void Tube::latest_value(float *pick_value)
+void Tube::value(float *pick_value)
 {
     if (element_empty)
     {
@@ -137,7 +137,7 @@ void Tube::latest_value(float *pick_value)
     Element::pick_value(pick_value);
 }
 
-void Tube::latest_value(int *pick_value)
+void Tube::value(int *pick_value)
 {
     if (element_empty)
     {
@@ -146,7 +146,7 @@ void Tube::latest_value(int *pick_value)
     Element::pick_value(pick_value);
 }
 
-void Tube::latest_value(long *pick_value)
+void Tube::value(long *pick_value)
 {
     if (element_empty)
     {
@@ -155,7 +155,7 @@ void Tube::latest_value(long *pick_value)
     Element::pick_value(pick_value);
 }
 
-void Tube::latest_value(unsigned int *pick_value)
+void Tube::value(unsigned int *pick_value)
 {
     if (element_empty)
     {
@@ -164,7 +164,7 @@ void Tube::latest_value(unsigned int *pick_value)
     Element::pick_value(pick_value);
 }
 
-void Tube::latest_value(unsigned long *pick_value)
+void Tube::value(unsigned long *pick_value)
 {
     if (element_empty)
     {
@@ -173,7 +173,7 @@ void Tube::latest_value(unsigned long *pick_value)
     Element::pick_value(pick_value);
 }
 
-timestamp_tz_t Tube::latest_timestamp()
+timestamp_tz_t Tube::timestamp()
 {
     if (timestamp_empty)
     {
