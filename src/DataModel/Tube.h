@@ -31,7 +31,7 @@ public:
     ~Tube();
 
     // DONE : DataModel saves and analyzes the values
-    bool begin(String _channel, String _name, uuid_t _token);
+    bool begin(String channel, String name, uuid_t token);
     bool add(timestamp_tz_t timestamp);
     void latest_value(float *pick_value);
     void latest_value(int *pick_value);

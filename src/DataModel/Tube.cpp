@@ -10,7 +10,6 @@ Tube::Tube(float *sensing_value)
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
@@ -26,7 +25,6 @@ Tube::Tube(int *sensing_value)
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
@@ -42,7 +40,6 @@ Tube::Tube(long *sensing_value)
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
@@ -58,7 +55,6 @@ Tube::Tube(unsigned int *sensing_value)
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
@@ -74,7 +70,6 @@ Tube::Tube(unsigned long *sensing_value)
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->size = 0;
     this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
@@ -84,12 +79,12 @@ Tube::~Tube()
 {
 }
 
-bool Tube::begin(String _channel, String _name, uuid_t _token)
+bool Tube::begin(String channel, String name, uuid_t token)
 {
-    channel = _channel;
-    name = _name;
-    token = _token;
-    token_empty = false;
+    this->channel = channel;
+    this->name = name;
+    this->token = token;
+    this->token_empty = false;
     return true;
 }
 
@@ -98,35 +93,30 @@ bool Tube::add(timestamp_tz_t timestamp)
     // TODO : Test
     if (float_value_ptr != nullptr)
     {
-        size += 1;
         element_empty = false;
         timestamp_empty = false;
         return Element::append(float_value_ptr, timestamp);
     }
     else if (int_value_ptr != nullptr)
     {
-        size += 1;
         element_empty = false;
         timestamp_empty = false;
         return Element::append(int_value_ptr, timestamp);
     }
     else if (long_value_ptr != nullptr)
     {
-        size += 1;
         element_empty = false;
         timestamp_empty = false;
         return Element::append(long_value_ptr, timestamp);
     }
     else if (unsigned_int_value_ptr != nullptr)
     {
-        size += 1;
         element_empty = false;
         timestamp_empty = false;
         return Element::append(unsigned_int_value_ptr, timestamp);
     }
     else if (unsigned_long_value_ptr != nullptr)
     {
-        size += 1;
         element_empty = false;
         timestamp_empty = false;
         return Element::append(unsigned_long_value_ptr, timestamp);
@@ -226,7 +216,6 @@ json_t Tube::json_parse()
         }
 
 }
-size = 0;
 element_empty = true;
 }
 */
