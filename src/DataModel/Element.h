@@ -19,12 +19,12 @@ class Element {
     bool append(unsigned int* add_value, timestamp_tz_t timestamp_add);
     bool append(unsigned long* add_value, timestamp_tz_t timestamp_add);
 
-    bool pick_value(float* _value);
-    bool pick_value(int* _value);
-    bool pick_value(long* _value);
-    bool pick_value(unsigned int* _value);
-    bool pick_value(unsigned long* _value);
-    timestamp_tz_t pick_timestamp();
+    bool saved_value(float* _value);
+    bool saved_value(int* _value);
+    bool saved_value(long* _value);
+    bool saved_value(unsigned int* _value);
+    bool saved_value(unsigned long* _value);
+    timestamp_tz_t saved_timestamp();
 
     bool saved_value_is(float value);
     bool saved_value_is(int value);
