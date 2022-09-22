@@ -1,11 +1,13 @@
 #ifndef ApiEndPoint_h
 #define ApiEndPoint_h
 
-#include "Type.h"
+#include "HttpStatusCodes.h"
+#include <Arduino.h>
 
-class ApiEndPoint
-{
-public:
+typedef String url_t;
+
+class ApiEndPoint {
+  public:
     // Gotrue
     url_t auth_url = "/token";
     // Postgres

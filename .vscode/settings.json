@@ -16,6 +16,15 @@
         "functional": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
-    }
+        "utility": "cpp",
+        "ratio": "cpp",
+        "variant": "cpp"
+    },
+    "cSpell.words": [
+        "Canaspad",
+        "Gotrue",
+        "nict",
+        "SSID",
+        "supabase"
+    ]
 }
