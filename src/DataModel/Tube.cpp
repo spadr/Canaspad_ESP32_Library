@@ -1,7 +1,6 @@
 #include "Tube.h"
 
-Tube::Tube(float *sensing_value)
-{
+Tube::Tube(float* sensing_value) {
     this->float_value_ptr = sensing_value;
     this->int_value_ptr = nullptr;
     this->long_value_ptr = nullptr;
@@ -15,8 +14,7 @@ Tube::Tube(float *sensing_value)
     this->timestamp_empty = true;
 }
 
-Tube::Tube(int *sensing_value)
-{
+Tube::Tube(int* sensing_value) {
     this->float_value_ptr = nullptr;
     this->int_value_ptr = sensing_value;
     this->long_value_ptr = nullptr;
@@ -30,8 +28,7 @@ Tube::Tube(int *sensing_value)
     this->timestamp_empty = true;
 }
 
-Tube::Tube(long *sensing_value)
-{
+Tube::Tube(long* sensing_value) {
     this->float_value_ptr = nullptr;
     this->int_value_ptr = nullptr;
     this->long_value_ptr = sensing_value;
@@ -45,8 +42,7 @@ Tube::Tube(long *sensing_value)
     this->timestamp_empty = true;
 }
 
-Tube::Tube(unsigned int *sensing_value)
-{
+Tube::Tube(unsigned int* sensing_value) {
     this->float_value_ptr = nullptr;
     this->int_value_ptr = nullptr;
     this->long_value_ptr = nullptr;
@@ -60,8 +56,7 @@ Tube::Tube(unsigned int *sensing_value)
     this->timestamp_empty = true;
 }
 
-Tube::Tube(unsigned long *sensing_value)
-{
+Tube::Tube(unsigned long* sensing_value) {
     this->float_value_ptr = nullptr;
     this->int_value_ptr = nullptr;
     this->long_value_ptr = nullptr;
@@ -75,12 +70,9 @@ Tube::Tube(unsigned long *sensing_value)
     this->timestamp_empty = true;
 }
 
-Tube::~Tube()
-{
-}
+Tube::~Tube() {}
 
-bool Tube::begin(String channel, String name, uuid_t token)
-{
+bool Tube::begin(String channel, String name, uuid_t token) {
     this->channel = channel;
     this->name = name;
     this->token = token;
@@ -88,95 +80,71 @@ bool Tube::begin(String channel, String name, uuid_t token)
     return true;
 }
 
-bool Tube::add(timestamp_tz_t timestamp)
-{
+bool Tube::add(timestamp_tz_t timestamp) {
     // TODO : Test
-    if (float_value_ptr != nullptr)
-    {
+    if (float_value_ptr != nullptr) {
         element_empty = false;
         timestamp_empty = false;
         return Element::append(float_value_ptr, timestamp);
-    }
-    else if (int_value_ptr != nullptr)
-    {
+    } else if (int_value_ptr != nullptr) {
         element_empty = false;
         timestamp_empty = false;
         return Element::append(int_value_ptr, timestamp);
-    }
-    else if (long_value_ptr != nullptr)
-    {
+    } else if (long_value_ptr != nullptr) {
         element_empty = false;
         timestamp_empty = false;
         return Element::append(long_value_ptr, timestamp);
-    }
-    else if (unsigned_int_value_ptr != nullptr)
-    {
+    } else if (unsigned_int_value_ptr != nullptr) {
         element_empty = false;
         timestamp_empty = false;
         return Element::append(unsigned_int_value_ptr, timestamp);
-    }
-    else if (unsigned_long_value_ptr != nullptr)
-    {
+    } else if (unsigned_long_value_ptr != nullptr) {
         element_empty = false;
         timestamp_empty = false;
         return Element::append(unsigned_long_value_ptr, timestamp);
-    }
-    else
-    {
+    } else {
         // Error
         return false;
     }
 }
 
-void Tube::value(float *pick_value)
-{
-    if (element_empty)
-    {
+void Tube::value(float* pick_value) {
+    if (element_empty) {
         // Error
     }
     Element::pick_value(pick_value);
 }
 
-void Tube::value(int *pick_value)
-{
-    if (element_empty)
-    {
+void Tube::value(int* pick_value) {
+    if (element_empty) {
         // Error
     }
     Element::pick_value(pick_value);
 }
 
-void Tube::value(long *pick_value)
-{
-    if (element_empty)
-    {
+void Tube::value(long* pick_value) {
+    if (element_empty) {
         // Error
     }
     Element::pick_value(pick_value);
 }
 
-void Tube::value(unsigned int *pick_value)
-{
-    if (element_empty)
-    {
+void Tube::value(unsigned int* pick_value) {
+    if (element_empty) {
         // Error
     }
     Element::pick_value(pick_value);
 }
 
-void Tube::value(unsigned long *pick_value)
-{
-    if (element_empty)
-    {
+void Tube::value(unsigned long* pick_value) {
+    if (element_empty) {
         // Error
     }
     Element::pick_value(pick_value);
 }
 
-timestamp_tz_t Tube::timestamp()
-{
-    if (timestamp_empty)
-    {
+timestamp_tz_t Tube::timestamp() {
+    if (timestamp_empty) {
         // Error
     }
     return Element::pick_timestamp();

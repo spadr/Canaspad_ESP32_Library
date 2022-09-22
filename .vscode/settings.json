@@ -17,5 +17,12 @@
         "tuple": "cpp",
         "type_traits": "cpp",
         "utility": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "Canaspad",
+        "Gotrue",
+        "nict",
+        "SSID",
+        "supabase"
+    ]
 }

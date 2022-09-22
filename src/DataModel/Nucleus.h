@@ -1,13 +1,12 @@
-union Nucleus
-{
-private:
+union Nucleus {
+  private:
     float float_value;
     int int_value;
     long long_value;
     unsigned int unsigned_int_value;
     unsigned long unsigned_long_value;
 
-public:
+  public:
     Nucleus() {}
     ~Nucleus() {}
     void put_float(float f) { float_value = f; }

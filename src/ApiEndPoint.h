@@ -3,9 +3,8 @@
 
 #include "Type.h"
 
-class ApiEndPoint
-{
-public:
+class ApiEndPoint {
+  public:
     // Gotrue
     url_t auth_url = "/token";
     // Postgres

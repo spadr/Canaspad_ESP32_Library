@@ -4,9 +4,8 @@
 //#include <ArduinoJson.h>
 #include "Element.h"
 
-class Tube : public Element
-{
-private:
+class Tube : public Element {
+  private:
     uuid_t token;
     String channel;
     String name;
@@ -14,29 +13,29 @@ private:
     bool token_empty;
     bool timestamp_empty;
 
-    float *float_value_ptr;
-    int *int_value_ptr;
-    long *long_value_ptr;
-    unsigned int *unsigned_int_value_ptr;
-    unsigned long *unsigned_long_value_ptr;
+    float* float_value_ptr;
+    int* int_value_ptr;
+    long* long_value_ptr;
+    unsigned int* unsigned_int_value_ptr;
+    unsigned long* unsigned_long_value_ptr;
 
-public:
+  public:
     // DONE : Create a scheme for keeping data types
-    Tube(float *sensing_value);
-    Tube(int *sensing_value);
-    Tube(long *sensing_value);
-    Tube(unsigned int *sensing_value);
-    Tube(unsigned long *sensing_value);
+    Tube(float* sensing_value);
+    Tube(int* sensing_value);
+    Tube(long* sensing_value);
+    Tube(unsigned int* sensing_value);
+    Tube(unsigned long* sensing_value);
     ~Tube();
 
     // DONE : DataModel saves and analyzes the values
     bool begin(String channel, String name, uuid_t token);
     bool add(timestamp_tz_t timestamp);
-    void value(float *pick_value);
-    void value(int *pick_value);
-    void value(long *pick_value);
-    void value(unsigned int *pick_value);
-    void value(unsigned long *pick_value);
+    void value(float* pick_value);
+    void value(int* pick_value);
+    void value(long* pick_value);
+    void value(unsigned int* pick_value);
+    void value(unsigned long* pick_value);
     timestamp_tz_t timestamp();
 };
 
