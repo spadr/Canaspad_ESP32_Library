@@ -10,7 +10,6 @@ private:
     uuid_t token;
     String channel;
     String name;
-    int size;
     bool element_empty;
     bool token_empty;
     bool timestamp_empty;
