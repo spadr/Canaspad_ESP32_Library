@@ -42,28 +42,28 @@ bool Element::append(unsigned long* add_value, timestamp_tz_t timestamp_add) {
     return true;
 }
 
-bool Element::savedValue(float* _value) {
-    *_value = nucleus.getFloat();
+bool Element::savedValue(float* value) {
+    *value = nucleus.getFloat();
     return true;
 }
 
-bool Element::savedValue(int* _value) {
-    *_value = nucleus.getInt();
+bool Element::savedValue(int* value) {
+    *value = nucleus.getInt();
     return true;
 }
 
-bool Element::savedValue(long* _value) {
-    *_value = nucleus.getLong();
+bool Element::savedValue(long* value) {
+    *value = nucleus.getLong();
     return true;
 }
 
-bool Element::savedValue(unsigned int* _value) {
-    *_value = nucleus.getUnsignedInt();
+bool Element::savedValue(unsigned int* value) {
+    *value = nucleus.getUnsignedInt();
     return true;
 }
 
-bool Element::savedValue(unsigned long* _value) {
-    *_value = nucleus.getUnsignedLong();
+bool Element::savedValue(unsigned long* value) {
+    *value = nucleus.getUnsignedLong();
     return true;
 }
 
