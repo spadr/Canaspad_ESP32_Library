@@ -2,7 +2,6 @@
 #define Canaspad_h
 
 #include "DataModel/Tube.h"
-#include "Type.h"
 
 class Canaspad {
   private:
