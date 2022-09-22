@@ -19,19 +19,19 @@ class Element {
     bool append(unsigned int* add_value, timestamp_tz_t timestamp_add);
     bool append(unsigned long* add_value, timestamp_tz_t timestamp_add);
 
-    bool saved_value(float* _value);
-    bool saved_value(int* _value);
-    bool saved_value(long* _value);
-    bool saved_value(unsigned int* _value);
-    bool saved_value(unsigned long* _value);
-    timestamp_tz_t saved_timestamp();
+    bool savedValue(float* _value);
+    bool savedValue(int* _value);
+    bool savedValue(long* _value);
+    bool savedValue(unsigned int* _value);
+    bool savedValue(unsigned long* _value);
+    timestamp_tz_t savedTimestamp();
 
-    bool saved_value_is(float value);
-    bool saved_value_is(int value);
-    bool saved_value_is(long value);
-    bool saved_value_is(unsigned int value);
-    bool saved_value_is(unsigned long value);
-    bool saved_timestamp_is(timestamp_tz_t timestamp);
+    bool savedValueIs(float value);
+    bool savedValueIs(int value);
+    bool savedValueIs(long value);
+    bool savedValueIs(unsigned int value);
+    bool savedValueIs(unsigned long value);
+    bool savedTimestampIs(timestamp_tz_t timestamp);
 };
 
 #endif

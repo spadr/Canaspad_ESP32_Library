@@ -112,42 +112,42 @@ void Tube::value(float* pick_value) {
     if (element_empty) {
         // Error
     }
-    Element::saved_value(pick_value);
+    Element::savedValue(pick_value);
 }
 
 void Tube::value(int* pick_value) {
     if (element_empty) {
         // Error
     }
-    Element::saved_value(pick_value);
+    Element::savedValue(pick_value);
 }
 
 void Tube::value(long* pick_value) {
     if (element_empty) {
         // Error
     }
-    Element::saved_value(pick_value);
+    Element::savedValue(pick_value);
 }
 
 void Tube::value(unsigned int* pick_value) {
     if (element_empty) {
         // Error
     }
-    Element::saved_value(pick_value);
+    Element::savedValue(pick_value);
 }
 
 void Tube::value(unsigned long* pick_value) {
     if (element_empty) {
         // Error
     }
-    Element::saved_value(pick_value);
+    Element::savedValue(pick_value);
 }
 
 timestamp_tz_t Tube::timestamp() {
     if (timestamp_empty) {
         // Error
     }
-    return Element::saved_timestamp();
+    return Element::savedTimestamp();
 }
 
 /*

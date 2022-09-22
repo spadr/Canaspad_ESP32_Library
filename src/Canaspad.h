@@ -29,8 +29,8 @@ class Canaspad {
     void fetch(unsigned int* fresh_value, Tube& sensor);
     void fetch(unsigned long* fresh_value, Tube& sensor);
 
-    timestamp_tz_t _make_timestamp_tz(int year, int month, int day, int hour, int minute,
-                                      int second, int utc_offset_hour);
+    timestamp_tz_t makeTimestampTz(int year, int month, int day, int hour, int minute, int second,
+                                   int utc_offset_hour);
 };
 
 #endif

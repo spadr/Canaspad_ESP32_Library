@@ -28,7 +28,7 @@ int Canaspad::token(String const channel, String const name, Tube& sensor) {
 bool Canaspad::write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
                      int utc_offset_hour) {
     timestamp_tz_t timestamp_with_tz =
-        _make_timestamp_tz(year, month, day, hour, minute, second, utc_offset_hour);
+        makeTimestampTz(year, month, day, hour, minute, second, utc_offset_hour);
     return sensor.add(timestamp_with_tz);
 }
 
@@ -64,8 +64,8 @@ void Canaspad::fetch(unsigned long* fresh_value_p, Tube& sensor) {
     *fresh_value_p = 339;
 }
 
-timestamp_tz_t Canaspad::_make_timestamp_tz(int year, int month, int day, int hour, int minute,
-                                            int second, int utc_offset_hour) {
+timestamp_tz_t Canaspad::makeTimestampTz(int year, int month, int day, int hour, int minute,
+                                         int second, int utc_offset_hour) {
     // DONE: make timestamp
     char buf[23];
     sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d+%02d", year, month, day, hour, minute, second,
