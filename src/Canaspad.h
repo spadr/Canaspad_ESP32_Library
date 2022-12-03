@@ -1,17 +1,26 @@
 #ifndef Canaspad_h
 #define Canaspad_h
 
+#include "ApiEndPoint.h"
 #include "DataModel/Tube.h"
+#include "HttpStatusCodes.h"
+#include "WebAPI/Supabase.h"
+
 
 class Canaspad {
+  protected:
+    CanaspadEndPoint canaspad_api_end_point;
+    Supabase supabase;
+
   private:
-    const char* api_url;
+    const char* api_host;
     const char* api_key;
     const char* api_username;
     const char* api_password;
 
+
   public:
-    Canaspad(const char* url, const char* key, const char* username, const char* password,
+    Canaspad(const char* host, const char* key, const char* username, const char* password,
              const long offset_sec);
     ~Canaspad();
 

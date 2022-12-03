@@ -150,40 +150,42 @@ timestamp_tz_t Tube::timestamp() {
     return Element::savedTimestamp();
 }
 
-/*
-json_t Tube::json_parse()
-{
-    if (!token_empty)
-    {
-        // TODO: Post Tube record
-        // use ArduinoJson
 
-        if (float_value_ptr != nullptr)
-        {
-            Serial.println("float");
+json_t Tube::elementParse() {
+    if (!token_empty && !element_empty && !timestamp_empty) {
+        StaticJsonDocument<200> doc;
+        doc["token"] = this->token;
+        doc["timestamp"] = Element::savedTimestamp();
+        if (float_value_ptr != nullptr) {
+            float value;
+            Element::savedValue(&value);
+            doc["value"] = value; // Only 9 decimal places
+        } else if (int_value_ptr != nullptr) {
+            int value;
+            Element::savedValue(&value);
+            doc["value"] = value;
+        } else if (long_value_ptr != nullptr) {
+            long value;
+            Element::savedValue(&value);
+            doc["value"] = value;
+        } else if (unsigned_int_value_ptr != nullptr) {
+            unsigned int value;
+            Element::savedValue(&value);
+            doc["value"] = value;
+        } else if (unsigned_long_value_ptr != nullptr) {
+            unsigned long value;
+            Element::savedValue(&value);
+            doc["value"] = value;
+        } else {
+            // Error
         }
-        else if (int_value_ptr != nullptr)
-        {
-            Serial.println("int");
-        }
-        else if (long_value_ptr != nullptr)
-        {
-            Serial.println("long");
-        }
-        else if (unsigned_int_value_ptr != nullptr)
-        {
-            Serial.println("unsigned int");
-        }
-        else if (unsigned_long_value_ptr != nullptr)
-        {
-            Serial.println("unsigned long");
-        }
-        else
-        {
-            Serial.println("unknown");
-        }
-
+        String output;
+        serializeJson(doc, output);
+        json_t json = output;
+        return json;
+    } else {
+        // Error
+        return "";
+    }
+    return "";
 }
-element_empty = true;
-}
-*/

@@ -1,19 +1,16 @@
 #ifndef ApiEndPoint_h
 #define ApiEndPoint_h
 
-#include "HttpStatusCodes.h"
-#include <Arduino.h>
+#include "Canaspad.h"
 
-typedef String url_t;
-
-class ApiEndPoint {
+class CanaspadEndPoint {
   public:
     // Gotrue
-    url_t auth_url = "/token";
+    const char* auth = "/token";
     // Postgres
-    url_t tube_url = "/tube";                    // need to auth
-    url_t element_url = "/element";              // need to auth
-    url_t fresh_element_url = "/fresh_elements"; // need to auth
+    const char* tube = "/tube";                    // need to auth
+    const char* element = "/element";              // need to auth
+    const char* fresh_element = "/fresh_elements"; // need to auth
 };
 
 #endif

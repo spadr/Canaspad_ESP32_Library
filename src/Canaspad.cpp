@@ -1,9 +1,9 @@
 #include "Canaspad.h"
-#include "ApiEndPoint.h"
 
-Canaspad::Canaspad(const char* url, const char* key, const char* username, const char* password,
+
+Canaspad::Canaspad(const char* host, const char* key, const char* username, const char* password,
                    const long offset_sec) {
-    this->api_url = url;
+    this->api_host = host;
     this->api_key = key;
     this->api_username = username;
     this->api_password = password;
@@ -16,6 +16,8 @@ Canaspad::~Canaspad() {
 
 int Canaspad::login() {
     // TODO: sign in
+    supabase.begin(this->api_host, this->api_key, this->api_username, this->api_password,
+                   canaspad_api_end_point.auth);
     return HttpStatus::toInt(HttpStatus::Code::NotFound);
 }
 
@@ -33,34 +35,51 @@ bool Canaspad::write(Tube& sensor, int year, int month, int day, int hour, int m
 }
 
 int Canaspad::send(Tube& sensor) {
-    float _value;
-    sensor.value(&_value);
+    // TODO: Post Tube record
     timestamp_tz_t _timestamp = sensor.timestamp();
-    return HttpStatus::toInt(HttpStatus::Code::NotFound);
+    json_t json = sensor.elementParse();
+    // HttpResponse response = supabase.from("element").insert(json).execute();
+    ////HttpResponse response = supabase.execute();
+    return 1; ////response.status_code;
 }
 
 void Canaspad::fetch(float* fresh_value_p, Tube& sensor) {
     // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
+    // Json json = deserialize(response.message)
+    //*fresh_value_p = json[value];
     *fresh_value_p = 3.9;
 }
 
 void Canaspad::fetch(int* fresh_value_p, Tube& sensor) {
     // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
+    // Json json = deserialize(response.message)
+    //*fresh_value_p = json[value];
     *fresh_value_p = -39;
 }
 
 void Canaspad::fetch(long* fresh_value_p, Tube& sensor) {
     // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
+    // Json json = deserialize(response.message)
+    //*fresh_value_p = json[value];
     *fresh_value_p = -339;
 }
 
 void Canaspad::fetch(unsigned int* fresh_value_p, Tube& sensor) {
     // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
+    // Json json = deserialize(response.message)
+    //*fresh_value_p = json[value];
     *fresh_value_p = 39;
 }
 
 void Canaspad::fetch(unsigned long* fresh_value_p, Tube& sensor) {
     // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
+    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
+    // Json json = deserialize(response.message)
+    //*fresh_value_p = json[value];
     *fresh_value_p = 339;
 }
 

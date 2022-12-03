@@ -4,15 +4,15 @@
 
 const char* ssid = "WiFi_SSID";
 const char* password = "WiFi_PASSWORD";
-const char* api_url = "Canaspad_project_in_supabase";
+const char* api_host = "Canaspad_project_in_supabase";
 const char* api_key = "anon_key";
 const char* api_username = "user@mail.com";
 const char* api_password = "password";
-const char* ntp_server = "ntp.nict.jp";
+const char* ntp_host = "ntp.nict.jp";
 const long gmt_offset_sec = 3600 * 9;
 const int daylight_offset_sec = 0;
 
-Canaspad api(api_url, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
+Canaspad api(api_host, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
 
 float measured_value;
 Tube voltage_sensor(&measured_value);
@@ -46,7 +46,7 @@ void setup() {
         Serial.println("Failed to receive Tube token!");
     }
 
-    configTime(gmt_offset_sec, daylight_offset_sec, ntp_server);
+    configTime(gmt_offset_sec, daylight_offset_sec, ntp_host);
 }
 
 void loop() {

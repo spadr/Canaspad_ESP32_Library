@@ -1,8 +1,10 @@
 #ifndef Tube_h
 #define Tube_h
 
-//#include <ArduinoJson.h>
 #include "Element.h"
+#include <ArduinoJson.h>
+
+typedef String json_t;
 
 class Tube : public Element {
   private:
@@ -37,6 +39,7 @@ class Tube : public Element {
     void value(unsigned int* pick_value);
     void value(unsigned long* pick_value);
     timestamp_tz_t timestamp();
+    json_t elementParse();
 };
 
 #endif

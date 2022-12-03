@@ -1,9 +1,9 @@
 #include "Canaspad.h"
-//#include "Config.h"
-#include "ConfigExample.h"
+#include "Config.h"
+//#include "ConfigExample.h"
 #include <WiFiMulti.h>
 
-Canaspad api(api_url, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
+Canaspad api(api_host, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
 
 float measured_value;
 Tube voltage_sensor(&measured_value);
@@ -37,7 +37,7 @@ void setup() {
         Serial.println("Failed to receive Tube token!");
     }
 
-    configTime(gmt_offset_sec, daylight_offset_sec, ntp_server);
+    configTime(gmt_offset_sec, daylight_offset_sec, ntp_host);
 }
 
 void loop() {
