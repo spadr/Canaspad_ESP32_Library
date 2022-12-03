@@ -1,6 +1,6 @@
 #include "Canaspad.h"
-#include "Config.h"
-//#include "ConfigExample.h"
+//#include "Config.h"
+#include "ConfigExample.h"
 #include <WiFiMulti.h>
 
 Canaspad api(api_host, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
