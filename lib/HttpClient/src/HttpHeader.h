@@ -13,12 +13,18 @@ class HttpHeader {
     String CF_Ray;
     String Access_Control_Allow_Origin;
     String Set_Cookie;
+    String Content_Location;
+    String Content_Range;
     String Vary;
     String Via;
     String CF_Cache_Status;
+    String Content_Profile;
     String X_Kong_Proxy_Latency;
     String X_Kong_Upstream_Latency;
     String Server;
+
+    String sb_gateway_version;
+    String alt_svc;
 
   public:
     HttpHeader();

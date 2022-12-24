@@ -14,18 +14,75 @@ Canaspad::~Canaspad() {
     // TODO: sign out
 }
 
-int Canaspad::login() {
-    // TODO: sign in
-    supabase.begin(this->api_host, this->api_key, this->api_username, this->api_password,
-                   canaspad_api_end_point.auth);
-    return HttpStatus::toInt(HttpStatus::Code::NotFound);
+bool Canaspad::login() {
+    GoTrue& auth_client = supabase.auth()->signIn(this->api_host, this->api_key, this->api_username,
+                                                  this->api_password, canaspad_api_end_point.auth);
+    if (auth_client.checkError()) {
+        this->error_message = auth_client.checkErrorMessage();
+        return false;
+    }
+    return auth_client.checkAuthStatus();
 }
 
-int Canaspad::token(String const channel, String const name, Tube& sensor) {
-    uuid_t token = "token"; // TODO: Get TUBE record if channel and name exist
+bool Canaspad::token(String const channel, String const name, Tube& sensor) {
+    // Get TUBE record if channel and name exist
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+    db_client.from("tube").select("token").eq("channel", channel).eq("name", name).execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+        return false;
+    }
+
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "json deserialize failed";
+        return false;
+    }
+
+
+    if (doc[0] == nullptr) {
+        this->error_message = "No token found";
+        return false;
+    }
+
+    uuid_t token = doc[0]["token"].as<String>();
     sensor.begin(channel, name, token);
-    return HttpStatus::toInt(HttpStatus::Code::NotFound);
+    return true;
 }
+
+bool Canaspad::createToken(String const channel, String const name, Tube& sensor) {
+    // TODO: Create TUBE record
+    String json = "{\"channel\":\"" + channel + "\",\"name\":\"" + name + "\"}";
+
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+    db_client.from("tube").upsert(json).execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+        return false;
+    }
+
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "deserializeJson failed: " + String(error.c_str());
+        return false;
+    }
+
+    if (doc[0] != nullptr) {
+        uuid_t token = doc[0]["token"].as<String>();
+        sensor.begin(channel, name, token);
+        return true;
+    }
+    return false;
+}
+
 
 bool Canaspad::write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
                      int utc_offset_hour) {
@@ -34,53 +91,171 @@ bool Canaspad::write(Tube& sensor, int year, int month, int day, int hour, int m
     return sensor.add(timestamp_with_tz);
 }
 
-int Canaspad::send(Tube& sensor) {
+bool Canaspad::send(Tube& sensor) {
     // TODO: Post Tube record
     timestamp_tz_t _timestamp = sensor.timestamp();
-    json_t json = sensor.elementParse();
-    // HttpResponse response = supabase.from("element").insert(json).execute();
-    ////HttpResponse response = supabase.execute();
-    return 1; ////response.status_code;
+    String json = sensor.elementParse();
+
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+    db_client.from("element").insert(json).execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+        return false;
+    }
+
+    return true;
 }
 
 void Canaspad::fetch(float* fresh_value_p, Tube& sensor) {
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
-    // Json json = deserialize(response.message)
-    //*fresh_value_p = json[value];
-    *fresh_value_p = 3.9;
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+
+    db_client.from("element")
+        .select("value")
+        .eq("tube_token", sensor.checkToken())
+        .order("created_at", false)
+        .limit(1)
+        .execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+    }
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "json deserialize failed";
+    }
+
+
+    if (doc[0] == nullptr) {
+        this->error_message = "No element found";
+    }
+
+    float value = doc[0]["value"].as<float>();
+    *fresh_value_p = value;
 }
 
 void Canaspad::fetch(int* fresh_value_p, Tube& sensor) {
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
-    // Json json = deserialize(response.message)
-    //*fresh_value_p = json[value];
-    *fresh_value_p = -39;
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+
+    db_client.from("element")
+        .select("value")
+        .eq("tube_token", sensor.checkToken())
+        .order("created_at", false)
+        .limit(1)
+        .execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+    }
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "json deserialize failed";
+    }
+
+
+    if (doc[0] == nullptr) {
+        this->error_message = "No element found";
+    }
+
+    int value = doc[0]["value"].as<int>();
+    *fresh_value_p = value;
 }
 
 void Canaspad::fetch(long* fresh_value_p, Tube& sensor) {
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
-    // Json json = deserialize(response.message)
-    //*fresh_value_p = json[value];
-    *fresh_value_p = -339;
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+
+    db_client.from("element")
+        .select("value")
+        .eq("tube_token", sensor.checkToken())
+        .order("created_at", false)
+        .limit(1)
+        .execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+    }
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "json deserialize failed";
+    }
+
+
+    if (doc[0] == nullptr) {
+        this->error_message = "No element found";
+    }
+
+    long value = doc[0]["value"].as<long>();
+    *fresh_value_p = value;
 }
 
 void Canaspad::fetch(unsigned int* fresh_value_p, Tube& sensor) {
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
-    // Json json = deserialize(response.message)
-    //*fresh_value_p = json[value];
-    *fresh_value_p = 39;
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+
+    db_client.from("element")
+        .select("value")
+        .eq("tube_token", sensor.checkToken())
+        .order("created_at", false)
+        .limit(1)
+        .execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+    }
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "json deserialize failed";
+    }
+
+
+    if (doc[0] == nullptr) {
+        this->error_message = "No element found";
+    }
+
+    unsigned int value = doc[0]["value"].as<unsigned int>();
+    *fresh_value_p = value;
 }
 
 void Canaspad::fetch(unsigned long* fresh_value_p, Tube& sensor) {
-    // TODO: fetch from "/rest/v1"  +  "/fresh_elements"
-    // HttpResponse response = supabase.from("fresh_elements").select("*").execute();
-    // Json json = deserialize(response.message)
-    //*fresh_value_p = json[value];
-    *fresh_value_p = 339;
+    GoTrue* auth_client = supabase.auth();
+    PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
+
+    db_client.from("element")
+        .select("value")
+        .eq("tube_token", sensor.checkToken())
+        .order("created_at", false)
+        .limit(1)
+        .execute();
+
+    if (db_client.checkError()) {
+        this->error_message = db_client.checkErrorMessage();
+    }
+
+    StaticJsonDocument<2048> doc;
+    DeserializationError error = deserializeJson(doc, db_client.checkResult());
+    if (error) {
+        this->error_message = "json deserialize failed";
+    }
+
+
+    if (doc[0] == nullptr) {
+        this->error_message = "No element found";
+    }
+
+    unsigned long value = doc[0]["value"].as<unsigned long>();
+    *fresh_value_p = value;
 }
 
 timestamp_tz_t Canaspad::makeTimestampTz(int year, int month, int day, int hour, int minute,

@@ -3,6 +3,7 @@
 
 #include "HttpHeader.h"
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 class HttpResponse {
   protected:
@@ -25,7 +26,6 @@ class HttpResponse {
 
     void add(String line);
     void concatChunk();
-    String json_at(String key) const;
 
     String checkHttpMessage() const { return this->http_message; }
     String checkHttpVersion() const { return this->http_version; }

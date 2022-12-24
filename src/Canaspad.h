@@ -4,7 +4,8 @@
 #include "ApiEndPoint.h"
 #include "DataModel/Tube.h"
 #include "HttpStatusCodes.h"
-#include "WebAPI/Supabase.h"
+#include <ArduinoJson.h>
+#include <Supabase.h>
 
 
 class Canaspad {
@@ -18,6 +19,8 @@ class Canaspad {
     const char* api_username;
     const char* api_password;
 
+    String error_message;
+
 
   public:
     Canaspad(const char* host, const char* key, const char* username, const char* password,
@@ -26,11 +29,12 @@ class Canaspad {
 
     int offset_hour;
 
-    int login();
-    int token(String const channel, String const name, Tube& sensor);
+    bool login();
+    bool token(String const channel, String const name, Tube& sensor);
+    bool createToken(String const channel, String const name, Tube& sensor);
     bool write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
                int utc_offset_hour);
-    int send(Tube& sensor);
+    bool send(Tube& sensor);
     void fetch(float* fresh_value, Tube& sensor);
     void fetch(int* fresh_value, Tube& sensor);
     void fetch(long* fresh_value, Tube& sensor);
@@ -39,6 +43,8 @@ class Canaspad {
 
     timestamp_tz_t makeTimestampTz(int year, int month, int day, int hour, int minute, int second,
                                    int utc_offset_hour);
+
+    String checkErrorMessage() { return error_message; }
 };
 
 #endif

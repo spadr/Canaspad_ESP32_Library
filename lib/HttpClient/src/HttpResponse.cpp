@@ -102,29 +102,3 @@ void HttpResponse::concatChunk() {
     }
     this->message_body = body;
 }
-
-
-String HttpResponse::json_at(String key) const {
-    String body = message_body;
-    int key_pos = body.indexOf(key);
-    if (key_pos == -1) {
-        log_e("key not found");
-        return "";
-    }
-    int value_pos = body.indexOf(":", key_pos);
-    if (value_pos == -1) {
-        log_e("value not found");
-        return "";
-    }
-    int value_start_pos = body.indexOf("\"", value_pos);
-    if (value_start_pos == -1) {
-        log_e("value start not found");
-        return "";
-    }
-    int value_end_pos = body.indexOf("\"", value_start_pos + 1);
-    if (value_end_pos == -1) {
-        log_e("value end not found");
-        return "";
-    }
-    return body.substring(value_start_pos + 1, value_end_pos);
-}

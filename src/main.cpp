@@ -1,5 +1,5 @@
 #include "Canaspad.h"
-//#include "Config.h"
+// #include "Config.h"
 #include "ConfigExample.h"
 #include <WiFiMulti.h>
 
@@ -22,19 +22,17 @@ void setup() {
     }
 
     // Login to Canaspad API
-    if (api.login() == 200) // Check HTTP status code
-    {
+    if (api.login()) {
         Serial.println("Loggedin successfully!");
     } else {
         Serial.println("Failed to login!");
     }
 
     // Get the Tube token
-    if (api.token("ch01", "name01", voltage_sensor) == 201) // Check HTTP status code
-    {
+    if (api.token("ch01", "name01", voltage_sensor)) {
         Serial.println("Received Tube token successfully!");
     } else {
-        Serial.println("Failed to receive Tube token!");
+        Serial.println(api.checkErrorMessage());
     }
 
     configTime(gmt_offset_sec, daylight_offset_sec, ntp_host);
@@ -62,11 +60,10 @@ void loop() {
         }
 
         // Send data to Canaspad API
-        if (api.send(voltage_sensor) == 201) // Check HTTP status code
-        {
+        if (api.send(voltage_sensor)) {
             Serial.println("Sent saved_value successfully!");
         } else {
-            Serial.println("Failed to send saved_value!");
+            Serial.println(api.checkErrorMessage());
         }
 
         // Getting values from Canaspad API

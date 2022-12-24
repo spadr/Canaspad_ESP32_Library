@@ -40,6 +40,8 @@ class Tube : public Element {
     void value(unsigned long* pick_value);
     timestamp_tz_t timestamp();
     json_t elementParse();
+
+    json_t checkToken() { return this->token; }
 };
 
 #endif

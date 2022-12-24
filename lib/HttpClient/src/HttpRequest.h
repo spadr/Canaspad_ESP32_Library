@@ -21,8 +21,8 @@ class HttpRequest {
     String params = "?";
     String header = "";
     String body = "";
+    String request_line = "";
 
-    bool _sendRequest(String request_line);
 
   public:
     HttpRequest(String host, unsigned int port);
@@ -34,17 +34,29 @@ class HttpRequest {
     bool setPrivateKey(const char* key);
     bool setCACert(const char* cert);
 
-    bool begin();
-
     bool addParameter(String key, String value);
     bool addHeader(String key, String value);
     bool setBody(String body);
 
-    HttpResponse* get();
-    HttpResponse* post();
-    HttpResponse* put();
-    HttpResponse* patch();
-    HttpResponse* delete_();
+    bool methodIsGet();
+    bool methodIsPost();
+    bool methodIsPut();
+    bool methodIsPatch();
+    bool methodIsDelete();
+    bool methodIsHead();
+
+    HttpResponse* send();
+
+    bool end();
+
+    // Test
+    String checkHost() const { return this->host; }
+    unsigned int checkPort() const { return this->port; }
+    String checkPath() const { return this->path; }
+    String checkParams() const { return this->params; }
+    String checkRequestLine() const { return this->request_line; }
+    String checkHeader() const { return this->header; }
+    String checkBody() const { return this->body; }
 };
 
 #endif

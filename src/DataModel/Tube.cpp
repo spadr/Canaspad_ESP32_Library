@@ -154,8 +154,8 @@ timestamp_tz_t Tube::timestamp() {
 json_t Tube::elementParse() {
     if (!token_empty && !element_empty && !timestamp_empty) {
         StaticJsonDocument<200> doc;
-        doc["token"] = this->token;
-        doc["timestamp"] = Element::savedTimestamp();
+        doc["tube_token"] = this->token;
+        doc["created_at"] = Element::savedTimestamp();
         if (float_value_ptr != nullptr) {
             float value;
             Element::savedValue(&value);
