@@ -1,4 +1,4 @@
-#include "Canaspad.h"
+#include <Canaspad.h>
 // #include "Config.h"
 #include "ConfigExample.h"
 #include <WiFiMulti.h>
@@ -40,7 +40,7 @@ void setup() {
 
 void loop() {
     getLocalTime(&timeInfo);
-    if (timeInfo.tm_sec % 10 == 0) { // 60-second interval
+    if (timeInfo.tm_sec % 60 == 0) { // 60-second interval
         Serial.println("---------------------------------------------");
 
         // Add the measured value to Tube object
