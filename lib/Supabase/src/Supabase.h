@@ -5,6 +5,7 @@
 #include <GoTrue.h>
 #include <HttpClient.h>
 #include <PostgRest.h>
+#include <memory>
 
 
 class Supabase {

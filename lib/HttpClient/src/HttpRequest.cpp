@@ -126,7 +126,7 @@ HttpResponse* HttpRequest::send() {
 
     unsigned long timeout = millis();
     while (client_ptr->available() == 0) {
-        if (millis() - timeout > 10000) {
+        if (millis() - timeout > 1000) {
             client_ptr->stop();
             log_e("HttpRequest: Connection timeout");
             return nullptr;

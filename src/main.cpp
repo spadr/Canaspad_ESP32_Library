@@ -1,6 +1,6 @@
+#include "Config.h"
 #include <Canaspad.h>
-// #include "Config.h"
-#include "ConfigExample.h"
+// #include "ConfigExample.h"
 #include <WiFiMulti.h>
 
 Canaspad api(api_host, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
@@ -29,7 +29,7 @@ void setup() {
     }
 
     // Get the Tube token
-    if (api.token("ch01", "name01", voltage_sensor)) {
+    if (api.token(voltage_sensor, "ch01", "name01")) {
         Serial.println("Received Tube token successfully!");
     } else {
         Serial.println(api.checkErrorMessage());
@@ -40,11 +40,17 @@ void setup() {
 
 void loop() {
     getLocalTime(&timeInfo);
-    if (timeInfo.tm_sec % 60 == 0) { // 60-second interval
+    if (timeInfo.tm_sec % 10 == 0) { // 60-second interval
         Serial.println("---------------------------------------------");
 
         // Add the measured value to Tube object
         measured_value = (analogRead(PIN) + 1) * 3.3 * 1000 / (4095 + 1);
+
+        long _random_number = random(100000, 999999);
+        float random_number = (float)_random_number / 1000.0;
+        random_number += random_number / 1000000.0;
+        measured_value = random_number;
+
         Serial.printf("Voltage: %2.2fmV\r\n", measured_value);
         api.write(voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
                   timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
@@ -68,7 +74,7 @@ void loop() {
 
         // Getting values from Canaspad API
         float fresh_value;
-        api.fetch(&fresh_value, voltage_sensor);
+        api.fetch(voltage_sensor, &fresh_value);
         Serial.printf("Voltage: %2.2fmV(Received from the API)\r\n", fresh_value);
 
         // Check if saved in Canaspad API

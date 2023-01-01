@@ -1,6 +1,5 @@
 #include "Canaspad.h"
 
-
 Canaspad::Canaspad(const char* host, const char* key, const char* username, const char* password,
                    const long offset_sec) {
     this->api_host = host;
@@ -24,7 +23,7 @@ bool Canaspad::login() {
     return auth_client.checkAuthStatus();
 }
 
-bool Canaspad::token(String const channel, String const name, Tube& sensor) {
+bool Canaspad::token(Tube& sensor, String const channel, String const name) {
     // Get TUBE record if channel and name exist
     GoTrue* auth_client = supabase.auth();
     PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
@@ -54,7 +53,7 @@ bool Canaspad::token(String const channel, String const name, Tube& sensor) {
     return true;
 }
 
-bool Canaspad::createToken(String const channel, String const name, Tube& sensor) {
+bool Canaspad::createToken(Tube& sensor, String const channel, String const name) {
     // TODO: Create TUBE record
     String json = "{\"channel\":\"" + channel + "\",\"name\":\"" + name + "\"}";
 
@@ -108,7 +107,7 @@ bool Canaspad::send(Tube& sensor) {
     return true;
 }
 
-void Canaspad::fetch(float* fresh_value_p, Tube& sensor) {
+void Canaspad::fetch(Tube& sensor, float* fresh_value_p, timestamp_tz_t* fresh_timestamp_p) {
     GoTrue* auth_client = supabase.auth();
     PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
 
@@ -123,6 +122,7 @@ void Canaspad::fetch(float* fresh_value_p, Tube& sensor) {
         this->error_message = db_client.checkErrorMessage();
     }
 
+
     StaticJsonDocument<2048> doc;
     DeserializationError error = deserializeJson(doc, db_client.checkResult());
     if (error) {
@@ -136,9 +136,14 @@ void Canaspad::fetch(float* fresh_value_p, Tube& sensor) {
 
     float value = doc[0]["value"].as<float>();
     *fresh_value_p = value;
+
+    if (fresh_timestamp_p != nullptr) {
+        timestamp_tz_t timestamp = doc[0]["created_at"].as<timestamp_tz_t>();
+        *fresh_timestamp_p = timestamp;
+    }
 }
 
-void Canaspad::fetch(int* fresh_value_p, Tube& sensor) {
+void Canaspad::fetch(Tube& sensor, int* fresh_value_p, timestamp_tz_t* fresh_timestamp_p) {
     GoTrue* auth_client = supabase.auth();
     PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
 
@@ -166,9 +171,14 @@ void Canaspad::fetch(int* fresh_value_p, Tube& sensor) {
 
     int value = doc[0]["value"].as<int>();
     *fresh_value_p = value;
+
+    if (fresh_timestamp_p != nullptr) {
+        timestamp_tz_t timestamp = doc[0]["created_at"].as<timestamp_tz_t>();
+        *fresh_timestamp_p = timestamp;
+    }
 }
 
-void Canaspad::fetch(long* fresh_value_p, Tube& sensor) {
+void Canaspad::fetch(Tube& sensor, long* fresh_value_p, timestamp_tz_t* fresh_timestamp_p) {
     GoTrue* auth_client = supabase.auth();
     PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
 
@@ -196,9 +206,14 @@ void Canaspad::fetch(long* fresh_value_p, Tube& sensor) {
 
     long value = doc[0]["value"].as<long>();
     *fresh_value_p = value;
+
+    if (fresh_timestamp_p != nullptr) {
+        timestamp_tz_t timestamp = doc[0]["created_at"].as<timestamp_tz_t>();
+        *fresh_timestamp_p = timestamp;
+    }
 }
 
-void Canaspad::fetch(unsigned int* fresh_value_p, Tube& sensor) {
+void Canaspad::fetch(Tube& sensor, unsigned int* fresh_value_p, timestamp_tz_t* fresh_timestamp_p) {
     GoTrue* auth_client = supabase.auth();
     PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
 
@@ -226,9 +241,15 @@ void Canaspad::fetch(unsigned int* fresh_value_p, Tube& sensor) {
 
     unsigned int value = doc[0]["value"].as<unsigned int>();
     *fresh_value_p = value;
+
+    if (fresh_timestamp_p != nullptr) {
+        timestamp_tz_t timestamp = doc[0]["created_at"].as<timestamp_tz_t>();
+        *fresh_timestamp_p = timestamp;
+    }
 }
 
-void Canaspad::fetch(unsigned long* fresh_value_p, Tube& sensor) {
+void Canaspad::fetch(Tube& sensor, unsigned long* fresh_value_p,
+                     timestamp_tz_t* fresh_timestamp_p) {
     GoTrue* auth_client = supabase.auth();
     PostgRest& db_client = supabase.rest()->begin(this->api_host, this->api_key, auth_client);
 
@@ -256,6 +277,11 @@ void Canaspad::fetch(unsigned long* fresh_value_p, Tube& sensor) {
 
     unsigned long value = doc[0]["value"].as<unsigned long>();
     *fresh_value_p = value;
+
+    if (fresh_timestamp_p != nullptr) {
+        timestamp_tz_t timestamp = doc[0]["created_at"].as<timestamp_tz_t>();
+        *fresh_timestamp_p = timestamp;
+    }
 }
 
 timestamp_tz_t Canaspad::makeTimestampTz(int year, int month, int day, int hour, int minute,

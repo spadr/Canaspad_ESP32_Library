@@ -226,7 +226,7 @@ PostgRest& PostgRest::execute() {
     client_ptr->addHeader("apikey", this->backend_key);
 
     if (this->use_token) {
-        String access_token = this->gotrue_ptr->checkAccessToken();
+        String access_token = this->gotrue_ptr->useAccessToken();
         client_ptr->addHeader("Authorization", "Bearer " + access_token);
     }
 
@@ -234,22 +234,10 @@ PostgRest& PostgRest::execute() {
 
     // TODO : check if the client is ready to execute
     HttpResponse* res_ptr = client_ptr->send();
-    delay(1000);
+
     client_ptr->end();
 
     int status_code = res_ptr->checkStatusCode();
-
-    if (status_code == 401) { // reflesh if JWT is expired
-        this->gotrue_ptr->keepAuth();
-        delay(1000);
-        String access_token = this->gotrue_ptr->checkAccessToken();
-        client_ptr->addHeader("Authorization", "Bearer " + access_token);
-        res_ptr = client_ptr->send();
-        delay(1000);
-        client_ptr->end();
-        status_code = res_ptr->checkStatusCode();
-    }
-    // TODO : if session
 
     if (int(status_code / 100) != 2) {
         this->error = true;

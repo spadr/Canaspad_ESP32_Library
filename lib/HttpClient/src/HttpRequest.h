@@ -3,6 +3,7 @@
 
 #include "HttpResponse.h"
 #include <WiFiClientSecure.h>
+#include <memory>
 
 class HttpRequest {
   protected:

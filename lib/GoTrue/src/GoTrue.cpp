@@ -7,7 +7,7 @@ GoTrue::GoTrue(const char* path, const int port) {
 
 GoTrue::~GoTrue() {
     // TODO: sign out
-    this->signed_in = false;
+    this->is_signed_in = false;
     this->access_token = "";
     this->refresh_token = "";
 }
@@ -38,7 +38,7 @@ GoTrue& GoTrue::signIn(const char* host, const char* key, const char* username,
     if ((username != NULL && username[0]) && (password != NULL && password[0])) {
         this->email = username;
         this->password = password;
-        this->signed_in = setAccessToken();
+        this->is_signed_in = setAccessToken();
         return *this;
     }
 
@@ -59,9 +59,14 @@ GoTrue& GoTrue::signIn(const char* host, const char* key, const char* username,
     return *this;
 }
 
-GoTrue& GoTrue::keepAuth() {
-    bool keep = refreshAccessToken() || setAccessToken();
-    return *this;
+String GoTrue::useAccessToken() {
+    unsigned long elapsed = millis() - this->signed_in_at;
+    Serial.println("elapsed: " + String(elapsed) + " expires_in: " + String(this->expires_in));
+    if (elapsed > this->expires_in - expiration_offset) {
+        bool keepAuth = refreshAccessToken() || setAccessToken();
+    }
+    // TODO : if session
+    return this->access_token;
 }
 
 bool GoTrue::setAccessToken() {
@@ -92,6 +97,7 @@ bool GoTrue::setAccessToken() {
         return false;
     }
 
+
     StaticJsonDocument<2048> doc;
     DeserializationError deserialize_error = deserializeJson(doc, res_ptr->checkMessageBody());
     if (deserialize_error) {
@@ -101,8 +107,10 @@ bool GoTrue::setAccessToken() {
         return false;
     }
 
+    this->signed_in_at = millis();
     this->access_token = doc["access_token"].as<String>();
     this->refresh_token = doc["refresh_token"].as<String>();
+    this->expires_in = doc["expires_in"].as<long>() * 1000;
 
     if (this->access_token == nullptr || this->access_token[0] == 0) {
         this->error = true;
@@ -114,14 +122,19 @@ bool GoTrue::setAccessToken() {
         this->error_message = "GoTrue: failed to get refresh token";
         return false;
     }
+    if (this->expires_in == 0) {
+        this->error = true;
+        this->error_message = "GoTrue: failed to get expires_in";
+        return false;
+    }
 
-    this->signed_in = true;
+    this->is_signed_in = true;
 
     return true;
 }
 
 bool GoTrue::refreshAccessToken() {
-    if (!this->signed_in) {
+    if (!this->is_signed_in) {
         this->error = true;
         this->error_message = "GoTrue: sign in first";
         return false;
@@ -132,7 +145,7 @@ bool GoTrue::refreshAccessToken() {
     // send request to auth endpoint
     HttpClient client(String(this->gotrue_host), this->backend_port);
     client.setInsecure();
-    client.setPath(this->backend_path + String("/token"));
+    client.setPath(String(this->backend_path) + String(this->endpoint));
     client.addParameter("grant_type", "refresh_token");
     client.addHeader("Host", String(this->gotrue_host));
     client.addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
@@ -163,8 +176,10 @@ bool GoTrue::refreshAccessToken() {
         return false;
     }
 
+    this->signed_in_at = millis();
     this->access_token = doc["access_token"].as<String>();
     this->refresh_token = doc["refresh_token"].as<String>();
+    this->expires_in = doc["expires_in"].as<long>() * 1000;
 
     if (this->access_token == nullptr || this->access_token[0] == 0) {
         this->error = true;
@@ -176,8 +191,13 @@ bool GoTrue::refreshAccessToken() {
         this->error_message = "GoTrue: failed to get refresh token";
         return false;
     }
+    if (this->expires_in == 0) {
+        this->error = true;
+        this->error_message = "GoTrue: failed to get expires_in";
+        return false;
+    }
 
-    this->signed_in = true;
+    this->is_signed_in = true;
 
     return true;
 }

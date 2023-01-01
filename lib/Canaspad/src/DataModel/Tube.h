@@ -3,11 +3,15 @@
 
 #include "Element.h"
 #include <ArduinoJson.h>
+#include <memory>
 
 typedef String json_t;
 
-class Tube : public Element {
+class Tube {
   private:
+    std::unique_ptr<Element> _element_ptr;
+    Element* element_ptr;
+
     uuid_t token;
     String channel;
     String name;
@@ -42,6 +46,33 @@ class Tube : public Element {
     json_t elementParse();
 
     json_t checkToken() { return this->token; }
+
+    bool savedValueIs(float value) {
+        float pick_value;
+        this->value(&pick_value);
+        return value == pick_value;
+    }
+    bool savedValueIs(int value) {
+        int pick_value;
+        this->value(&pick_value);
+        return value == pick_value;
+    }
+    bool savedValueIs(long value) {
+        long pick_value;
+        this->value(&pick_value);
+        return value == pick_value;
+    }
+    bool savedValueIs(unsigned int value) {
+        unsigned int pick_value;
+        this->value(&pick_value);
+        return value == pick_value;
+    }
+    bool savedValueIs(unsigned long value) {
+        unsigned long pick_value;
+        this->value(&pick_value);
+        return value == pick_value;
+    }
+    bool savedTimestampIs(timestamp_tz_t timestamp) { return timestamp == this->timestamp(); }
 };
 
 #endif

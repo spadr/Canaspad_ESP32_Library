@@ -14,7 +14,10 @@ class GoTrue {
     const char* endpoint = "";
     int backend_port;
 
-    bool signed_in = false;
+    bool is_signed_in = false;
+    unsigned long signed_in_at = 0;
+    unsigned long expires_in = 0;
+    unsigned long expiration_offset = 5000;
 
     const char* email;    // TODO encryption
     const char* password; // TODO encryption
@@ -37,8 +40,10 @@ class GoTrue {
                    const char* password = NULL, const char* auth_endpoint = NULL);
     GoTrue& keepAuth();
 
+    String useAccessToken();
+
     // Test
-    bool checkAuthStatus() { return this->signed_in; }
+    bool checkAuthStatus() { return this->is_signed_in; }
     String checkAccessToken() { return this->access_token; }
     String checkRefreshToken() { return this->refresh_token; }
 

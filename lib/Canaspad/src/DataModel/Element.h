@@ -3,6 +3,7 @@
 
 #include "Nucleus.h"
 #include <Arduino.h>
+#include <memory>
 
 using timestamp_tz_t = String; // ex:"2004-10-19 10:23:54+09"
 using uuid_t = String;
@@ -10,7 +11,9 @@ using uuid_t = String;
 
 class Element {
   private:
-    Nucleus nucleus;
+    std::unique_ptr<Nucleus> _nucleus_ptr;
+    Nucleus* nucleus_ptr;
+
     timestamp_tz_t timestamp;
 
   public:

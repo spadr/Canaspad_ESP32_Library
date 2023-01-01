@@ -43,28 +43,29 @@ void test_wifi() {
 void test_login() { TEST_ASSERT_TRUE(api.login()); }
 
 void test_sync_float_tube_token() {
-    TEST_ASSERT_TRUE(api.token("float_ch_01", "float_name_01", float_voltage_sensor));
+    TEST_ASSERT_TRUE(api.token(float_voltage_sensor, "float_ch_01", "float_name_01"));
 }
 
 void test_sync_int_tube_token() {
-    TEST_ASSERT_TRUE(api.token("int_ch_01", "int_name_01", int_voltage_sensor));
+    TEST_ASSERT_TRUE(api.token(int_voltage_sensor, "int_ch_01", "int_name_01"));
 }
 
 void test_sync_long_tube_token() {
-    TEST_ASSERT_TRUE(api.token("long_ch_01", "long_name_01", long_voltage_sensor));
+    TEST_ASSERT_TRUE(api.token(long_voltage_sensor, "long_ch_01", "long_name_01"));
 }
 
 void test_sync_uint_tube_token() {
-    TEST_ASSERT_TRUE(api.token("uint_ch_01", "uint_name_01", uint_voltage_sensor));
+    TEST_ASSERT_TRUE(api.token(uint_voltage_sensor, "uint_ch_01", "uint_name_01"));
 }
 
 void test_sync_ulong_tube_token() {
-    TEST_ASSERT_TRUE(api.token("ulong_ch_01", "ulong_name_01", ulong_voltage_sensor));
+    TEST_ASSERT_TRUE(api.token(ulong_voltage_sensor, "ulong_ch_01", "ulong_name_01"));
 }
 
 void test_sync_float_tube_value() {
     long _random_number = random(100000, 999999);
-    float random_number = _random_number / 1000.0;
+    float random_number = (float)_random_number / 1000.0;
+    random_number += random_number / 1000000.0;
     if (random(0, 1)) {
         random_number = random_number * -1;
     }
@@ -72,9 +73,10 @@ void test_sync_float_tube_value() {
     getLocalTime(&timeInfo);
     api.write(float_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    api.send(float_voltage_sensor);
+    String vol = String(random_number, 5);
+    TEST_ASSERT_TRUE(api.send(float_voltage_sensor));
     float fresh_value;
-    api.fetch(&fresh_value, float_voltage_sensor);
+    api.fetch(float_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_FLOAT(random_number, fresh_value);
 }
 
@@ -88,9 +90,9 @@ void test_sync_int_tube_value() {
     getLocalTime(&timeInfo);
     api.write(int_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    api.send(int_voltage_sensor);
+    TEST_ASSERT_TRUE(api.send(int_voltage_sensor));
     int fresh_value;
-    api.fetch(&fresh_value, int_voltage_sensor);
+    api.fetch(int_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_INT16(random_number, fresh_value);
 }
 
@@ -103,22 +105,22 @@ void test_sync_long_tube_value() {
     getLocalTime(&timeInfo);
     api.write(int_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    api.send(int_voltage_sensor);
-    int fresh_value;
-    api.fetch(&fresh_value, int_voltage_sensor);
+    TEST_ASSERT_TRUE(api.send(int_voltage_sensor));
+    long fresh_value;
+    api.fetch(int_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_INT32(random_number, fresh_value);
 }
 
 void test_sync_uint_tube_value() {
     long _random_number = random(65500, 65535);
-    int random_number = _random_number;
+    unsigned int random_number = _random_number;
     uint_measured_value = random_number;
     getLocalTime(&timeInfo);
     api.write(uint_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    api.send(uint_voltage_sensor);
+    TEST_ASSERT_TRUE(api.send(uint_voltage_sensor));
     unsigned int fresh_value;
-    api.fetch(&fresh_value, uint_voltage_sensor);
+    api.fetch(uint_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_UINT16(random_number, fresh_value);
 }
 
@@ -129,15 +131,17 @@ void test_sync_ulong_tube_value() {
     getLocalTime(&timeInfo);
     api.write(ulong_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    api.send(ulong_voltage_sensor);
+    TEST_ASSERT_TRUE(api.send(ulong_voltage_sensor));
+    delay(1000);
     unsigned long fresh_value;
-    api.fetch(&fresh_value, ulong_voltage_sensor);
+    api.fetch(ulong_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_UINT32(random_number, fresh_value);
 }
 
 
 void setup() {
     UNITY_BEGIN();
+
     RUN_TEST(test_wifi);
     RUN_TEST(test_login);
     RUN_TEST(test_sync_float_tube_token);
@@ -145,12 +149,17 @@ void setup() {
     RUN_TEST(test_sync_long_tube_token);
     RUN_TEST(test_sync_uint_tube_token);
     RUN_TEST(test_sync_ulong_tube_token);
+
     configTime(gmt_offset_sec, daylight_offset_sec, ntp_host);
-    RUN_TEST(test_sync_float_tube_value);
-    RUN_TEST(test_sync_int_tube_value);
-    RUN_TEST(test_sync_long_tube_value);
-    RUN_TEST(test_sync_uint_tube_value);
-    RUN_TEST(test_sync_ulong_tube_value);
+
+    for (int i = 0; i < 2; i++) {
+        RUN_TEST(test_sync_float_tube_value);
+        RUN_TEST(test_sync_int_tube_value);
+        RUN_TEST(test_sync_long_tube_value);
+        RUN_TEST(test_sync_uint_tube_value);
+        RUN_TEST(test_sync_ulong_tube_value);
+    }
+
     UNITY_END();
 }
 
