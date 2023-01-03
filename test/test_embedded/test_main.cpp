@@ -1,12 +1,13 @@
 #include "Config.h"
 #include <Canaspad.h>
 // #include "ConfigExample.h"
+#include <EEPROM.h>
 #include <WiFiMulti.h>
-
-
 #include <unity.h>
 
 Canaspad api(api_host, api_key, api_username, api_password, gmt_offset_sec + daylight_offset_sec);
+
+bool is_stack_overflow;
 
 float float_measured_value;
 Tube float_voltage_sensor(&float_measured_value);
@@ -25,7 +26,25 @@ Tube ulong_voltage_sensor(&ulong_measured_value);
 
 struct tm timeInfo;
 
-void test_wifi() {
+void test_stack_overflow() {
+    EEPROM.begin(2);
+    EEPROM.get(0, is_stack_overflow);
+    if (!is_stack_overflow) {
+        EEPROM.put(0, true);
+        EEPROM.commit();
+    }
+    TEST_ASSERT_FALSE(is_stack_overflow);
+}
+
+void test_stack_overflow_() {
+    EEPROM.begin(2);
+    EEPROM.put(0, false);
+    EEPROM.commit();
+    EEPROM.get(0, is_stack_overflow);
+    TEST_ASSERT_FALSE(is_stack_overflow);
+}
+
+void test_wifi_connection() {
     WiFiMulti wifiMulti;
     wifiMulti.addAP(ssid, password);
 
@@ -40,7 +59,7 @@ void test_wifi() {
     TEST_ASSERT_TRUE(wifiMulti.run() == WL_CONNECTED);
 }
 
-void test_login() { TEST_ASSERT_TRUE(api.login()); }
+void test_login_to_server() { TEST_ASSERT_TRUE(api.login()); }
 
 void test_sync_float_tube_token() {
     TEST_ASSERT_TRUE(api.token(float_voltage_sensor, "float_ch_01", "float_name_01"));
@@ -74,7 +93,9 @@ void test_sync_float_tube_value() {
     api.write(float_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
     String vol = String(random_number, 5);
-    TEST_ASSERT_TRUE(api.send(float_voltage_sensor));
+    if (api.send(float_voltage_sensor)) {
+        return;
+    }
     float fresh_value;
     api.fetch(float_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_FLOAT(random_number, fresh_value);
@@ -90,7 +111,9 @@ void test_sync_int_tube_value() {
     getLocalTime(&timeInfo);
     api.write(int_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    TEST_ASSERT_TRUE(api.send(int_voltage_sensor));
+    if (api.send(int_voltage_sensor)) {
+        return;
+    }
     int fresh_value;
     api.fetch(int_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_INT16(random_number, fresh_value);
@@ -105,7 +128,9 @@ void test_sync_long_tube_value() {
     getLocalTime(&timeInfo);
     api.write(int_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    TEST_ASSERT_TRUE(api.send(int_voltage_sensor));
+    if (api.send(int_voltage_sensor)) {
+        return;
+    }
     long fresh_value;
     api.fetch(int_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_INT32(random_number, fresh_value);
@@ -118,7 +143,9 @@ void test_sync_uint_tube_value() {
     getLocalTime(&timeInfo);
     api.write(uint_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    TEST_ASSERT_TRUE(api.send(uint_voltage_sensor));
+    if (api.send(uint_voltage_sensor)) {
+        return;
+    }
     unsigned int fresh_value;
     api.fetch(uint_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_UINT16(random_number, fresh_value);
@@ -131,8 +158,9 @@ void test_sync_ulong_tube_value() {
     getLocalTime(&timeInfo);
     api.write(ulong_voltage_sensor, timeInfo.tm_year + 1900, timeInfo.tm_mon + 1, timeInfo.tm_mday,
               timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
-    TEST_ASSERT_TRUE(api.send(ulong_voltage_sensor));
-    delay(1000);
+    if (api.send(ulong_voltage_sensor)) {
+        return;
+    }
     unsigned long fresh_value;
     api.fetch(ulong_voltage_sensor, &fresh_value);
     TEST_ASSERT_EQUAL_UINT32(random_number, fresh_value);
@@ -141,9 +169,11 @@ void test_sync_ulong_tube_value() {
 
 void setup() {
     UNITY_BEGIN();
+    delay(500);
 
-    RUN_TEST(test_wifi);
-    RUN_TEST(test_login);
+    RUN_TEST(test_stack_overflow);
+    RUN_TEST(test_wifi_connection);
+    RUN_TEST(test_login_to_server);
     RUN_TEST(test_sync_float_tube_token);
     RUN_TEST(test_sync_int_tube_token);
     RUN_TEST(test_sync_long_tube_token);
@@ -152,7 +182,7 @@ void setup() {
 
     configTime(gmt_offset_sec, daylight_offset_sec, ntp_host);
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 100; i++) {
         RUN_TEST(test_sync_float_tube_value);
         RUN_TEST(test_sync_int_tube_value);
         RUN_TEST(test_sync_long_tube_value);
@@ -160,6 +190,7 @@ void setup() {
         RUN_TEST(test_sync_ulong_tube_value);
     }
 
+    RUN_TEST(test_stack_overflow_);
     UNITY_END();
 }
 

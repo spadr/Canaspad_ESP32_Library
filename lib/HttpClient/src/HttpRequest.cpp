@@ -96,13 +96,13 @@ bool HttpRequest::methodIsHead() {
 HttpResponse* HttpRequest::send() {
 
     if (!this->client_ptr->connect(this->host.c_str(), this->port)) {
-        log_e("Connection failed");
-        return nullptr;
+        this->response_ptr->putNetworkError("Connection failed");
+        return this->response_ptr;
     }
 
     if (!this->client_ptr->connected()) {
-        log_e("Connection lost");
-        return nullptr;
+        this->response_ptr->putNetworkError("Connection lost");
+        return this->response_ptr;
     }
 
     String request_target;
@@ -126,10 +126,10 @@ HttpResponse* HttpRequest::send() {
 
     unsigned long timeout = millis();
     while (client_ptr->available() == 0) {
-        if (millis() - timeout > 1000) {
+        if (millis() - timeout > 10000) {
             client_ptr->stop();
-            log_e("HttpRequest: Connection timeout");
-            return nullptr;
+            this->response_ptr->putNetworkError("Connection timeout");
+            return this->response_ptr;
         }
     }
 

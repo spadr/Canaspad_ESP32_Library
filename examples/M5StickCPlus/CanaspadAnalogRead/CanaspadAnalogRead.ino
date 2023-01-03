@@ -61,7 +61,7 @@ void loop() {
                   timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
 
         // Check if saved in Tube object
-        timestamp_tz_t now = api.makeTimestampTz(timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
+        String now = api.makeTimestampTz(timeInfo.tm_year + 1900, timeInfo.tm_mon + 1,
                                                  timeInfo.tm_mday, timeInfo.tm_hour,
                                                  timeInfo.tm_min, timeInfo.tm_sec, api.offset_hour);
         if (voltage_sensor.saved_value_is(measured_value) &&

@@ -85,9 +85,13 @@ Tube::Tube(unsigned long* sensing_value) {
     this->element_ptr = _element_ptr.get();
 }
 
-Tube::~Tube() {}
+Tube::~Tube() {
+    if (this->_element_ptr) {
+        _element_ptr.reset(nullptr);
+    }
+}
 
-bool Tube::begin(String channel, String name, uuid_t token) {
+bool Tube::begin(String channel, String name, String token) {
     this->channel = channel;
     this->name = name;
     this->token = token;
@@ -95,7 +99,7 @@ bool Tube::begin(String channel, String name, uuid_t token) {
     return true;
 }
 
-bool Tube::add(timestamp_tz_t timestamp) {
+bool Tube::add(String timestamp) {
     // TODO : Test
     if (float_value_ptr != nullptr) {
         element_empty = false;
@@ -158,7 +162,7 @@ void Tube::value(unsigned long* pick_value) {
     element_ptr->savedValue(pick_value);
 }
 
-timestamp_tz_t Tube::timestamp() {
+String Tube::timestamp() {
     if (timestamp_empty) {
         // Error
     }
@@ -166,7 +170,7 @@ timestamp_tz_t Tube::timestamp() {
 }
 
 
-json_t Tube::elementParse() {
+String Tube::elementParse() {
     if (!token_empty && !element_empty && !timestamp_empty) {
         StaticJsonDocument<200> doc;
         doc["tube_token"] = this->token;
@@ -196,7 +200,7 @@ json_t Tube::elementParse() {
         }
         String output;
         serializeJson(doc, output);
-        json_t json = output;
+        String json = output;
         return json;
     } else {
         // Error

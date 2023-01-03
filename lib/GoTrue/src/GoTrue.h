@@ -24,7 +24,7 @@ class GoTrue {
     String access_token;  // TODO encryption
     String refresh_token; // TODO encryption
 
-    HttpResponse response;
+    // HttpResponse response;
     bool error = false;
     String error_message = "";
 
@@ -50,7 +50,7 @@ class GoTrue {
     // Result
     bool checkError() { return this->error; }
     String checkErrorMessage() { return this->error_message; }
-    String checkResult() { return this->response.checkMessageBody(); }
+    // String checkResult() { return this->response.checkMessageBody(); }
 };
 
 #endif

@@ -17,7 +17,7 @@ void HttpHeader::add(String name, String value) {
     } else if (name.equalsIgnoreCase("Access-Control-Allow-Origin")) {
         this->Access_Control_Allow_Origin += value;
     } else if (name.equalsIgnoreCase("Set-Cookie")) {
-        // this->Set_Cookie += value;
+        this->Set_Cookie += value;
     } else if (name.equalsIgnoreCase("Content-Location")) {
         this->Content_Location += value;
     } else if (name.equalsIgnoreCase("Content-Range")) {

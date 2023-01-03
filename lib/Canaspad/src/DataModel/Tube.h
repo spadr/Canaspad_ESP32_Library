@@ -5,14 +5,13 @@
 #include <ArduinoJson.h>
 #include <memory>
 
-typedef String json_t;
 
 class Tube {
   private:
     std::unique_ptr<Element> _element_ptr;
     Element* element_ptr;
 
-    uuid_t token;
+    String token;
     String channel;
     String name;
     bool element_empty;
@@ -35,17 +34,17 @@ class Tube {
     ~Tube();
 
     // DONE : DataModel saves and analyzes the values
-    bool begin(String channel, String name, uuid_t token);
-    bool add(timestamp_tz_t timestamp);
+    bool begin(String channel, String name, String token);
+    bool add(String timestamp);
     void value(float* pick_value);
     void value(int* pick_value);
     void value(long* pick_value);
     void value(unsigned int* pick_value);
     void value(unsigned long* pick_value);
-    timestamp_tz_t timestamp();
-    json_t elementParse();
+    String timestamp();
+    String elementParse();
 
-    json_t checkToken() { return this->token; }
+    String checkToken() { return this->token; }
 
     bool savedValueIs(float value) {
         float pick_value;
@@ -72,7 +71,7 @@ class Tube {
         this->value(&pick_value);
         return value == pick_value;
     }
-    bool savedTimestampIs(timestamp_tz_t timestamp) { return timestamp == this->timestamp(); }
+    bool savedTimestampIs(String timestamp) { return timestamp == this->timestamp(); }
 };
 
 #endif

@@ -63,6 +63,20 @@ PostgRest& PostgRest::upsert(String json) {
     return *this;
 }
 
+PostgRest& PostgRest::update(String json) {
+    client_ptr->setBody(json);
+    client_ptr->methodIsPatch();
+    client_ptr->addHeader("Content-Length", String(json.length()));
+    client_ptr->addHeader("Prefer", "return=representation");
+    return *this;
+}
+
+PostgRest& PostgRest::delete_() {
+    client_ptr->methodIsDelete();
+    client_ptr->addHeader("Prefer", "return=representation");
+    return *this;
+}
+
 
 PostgRest& PostgRest::eq(String column, String value) {
     client_ptr->addParameter(column, "eq." + value);
@@ -236,6 +250,13 @@ PostgRest& PostgRest::execute() {
     HttpResponse* res_ptr = client_ptr->send();
 
     client_ptr->end();
+
+    if (res_ptr->checkNetworkError()) {
+        this->error = true;
+        this->error_message =
+            "PostgRest: Network error is occured " + String(res_ptr->checkErrorMessage());
+        return *this;
+    }
 
     int status_code = res_ptr->checkStatusCode();
 

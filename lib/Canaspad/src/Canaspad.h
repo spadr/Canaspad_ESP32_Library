@@ -34,17 +34,15 @@ class Canaspad {
     bool write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
                int utc_offset_hour);
     bool send(Tube& sensor);
-    void fetch(Tube& sensor, float* fresh_value_p, timestamp_tz_t* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, int* fresh_value_p, timestamp_tz_t* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, long* fresh_value_p, timestamp_tz_t* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, unsigned int* fresh_value_p,
-               timestamp_tz_t* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, unsigned long* fresh_value_p,
-               timestamp_tz_t* fresh_timestamp_p = nullptr);
+    void fetch(Tube& sensor, float* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    void fetch(Tube& sensor, int* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    void fetch(Tube& sensor, long* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    void fetch(Tube& sensor, unsigned int* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    void fetch(Tube& sensor, unsigned long* fresh_value_p, String* fresh_timestamp_p = nullptr);
 
 
-    timestamp_tz_t makeTimestampTz(int year, int month, int day, int hour, int minute, int second,
-                                   int utc_offset_hour);
+    String makeTimestampTz(int year, int month, int day, int hour, int minute, int second,
+                           int utc_offset_hour);
 
     String checkErrorMessage() { return error_message; }
 };

@@ -61,7 +61,6 @@ GoTrue& GoTrue::signIn(const char* host, const char* key, const char* username,
 
 String GoTrue::useAccessToken() {
     unsigned long elapsed = millis() - this->signed_in_at;
-    Serial.println("elapsed: " + String(elapsed) + " expires_in: " + String(this->expires_in));
     if (elapsed > this->expires_in - expiration_offset) {
         bool keepAuth = refreshAccessToken() || setAccessToken();
     }
@@ -88,6 +87,13 @@ bool GoTrue::setAccessToken() {
     client.methodIsPost();
     HttpResponse* res_ptr = client.send();
     client.end();
+
+    if (res_ptr->checkNetworkError()) {
+        this->error = true;
+        this->error_message =
+            "GoTrue: Network error is occured" + String(res_ptr->checkErrorMessage());
+        return false;
+    }
 
     int status_code = res_ptr->checkStatusCode();
     if (status_code != 200) {

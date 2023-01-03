@@ -34,8 +34,8 @@ class PostgRest {
     PostgRest& select(String column);
     PostgRest& insert(String json);
     PostgRest& upsert(String json);
-    // PostgRest& update(String table, String json);
-    // PostgRest& delete(String table);
+    PostgRest& update(String json);
+    PostgRest& delete_();
 
 
     PostgRest& eq(String column, String value);

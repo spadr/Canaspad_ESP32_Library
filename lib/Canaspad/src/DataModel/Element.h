@@ -5,40 +5,37 @@
 #include <Arduino.h>
 #include <memory>
 
-using timestamp_tz_t = String; // ex:"2004-10-19 10:23:54+09"
-using uuid_t = String;
-// typedef unsigned char uuid_t[16];
 
 class Element {
   private:
     std::unique_ptr<Nucleus> _nucleus_ptr;
     Nucleus* nucleus_ptr;
 
-    timestamp_tz_t timestamp;
+    String timestamp;
 
   public:
     Element();
     ~Element();
 
-    bool append(float* add_value, timestamp_tz_t timestamp_add);
-    bool append(int* add_value, timestamp_tz_t timestamp_add);
-    bool append(long* add_value, timestamp_tz_t timestamp_add);
-    bool append(unsigned int* add_value, timestamp_tz_t timestamp_add);
-    bool append(unsigned long* add_value, timestamp_tz_t timestamp_add);
+    bool append(float* add_value, String timestamp_add);
+    bool append(int* add_value, String timestamp_add);
+    bool append(long* add_value, String timestamp_add);
+    bool append(unsigned int* add_value, String timestamp_add);
+    bool append(unsigned long* add_value, String timestamp_add);
 
     bool savedValue(float* _value);
     bool savedValue(int* _value);
     bool savedValue(long* _value);
     bool savedValue(unsigned int* _value);
     bool savedValue(unsigned long* _value);
-    timestamp_tz_t savedTimestamp();
+    String savedTimestamp();
 
     bool savedValueIs(float value);
     bool savedValueIs(int value);
     bool savedValueIs(long value);
     bool savedValueIs(unsigned int value);
     bool savedValueIs(unsigned long value);
-    bool savedTimestampIs(timestamp_tz_t timestamp);
+    bool savedTimestampIs(String timestamp);
 };
 
 #endif
