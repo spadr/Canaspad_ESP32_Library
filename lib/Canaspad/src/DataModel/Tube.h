@@ -24,6 +24,10 @@ class Tube {
     unsigned int* unsigned_int_value_ptr;
     unsigned long* unsigned_long_value_ptr;
 
+    bool error;
+    String error_message;
+
+
   public:
     // DONE : Create a scheme for keeping data types
     Tube(float* sensing_value);
@@ -72,6 +76,8 @@ class Tube {
         return value == pick_value;
     }
     bool savedTimestampIs(String timestamp) { return timestamp == this->timestamp(); }
+
+    bool parsedElementIs(String json);
 };
 
 #endif

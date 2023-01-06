@@ -8,34 +8,32 @@
 class PostgRest {
   protected:
   private:
+    HttpClient* client_ptr;
+
     const char* backend_host;
     int backend_port;
     const char* backend_path;
-    const char* backend_key;
 
     bool use_token = false;
-
-    std::unique_ptr<HttpClient> _client_ptr;
-    HttpClient* client_ptr;
     GoTrue* gotrue_ptr;
 
-    HttpResponse* response;
     bool error = false;
     String error_message = "";
+    Result result;
 
   public:
-    PostgRest(const char* path, const int port);
+    PostgRest(HttpClient* client_ptr, const char* path, const int port);
     ~PostgRest();
 
-    PostgRest& begin(const char* host, const char* key);
-    PostgRest& begin(const char* host, const char* key, GoTrue* gotrue_ptr);
+    PostgRest& begin(const char* host);
+    PostgRest& begin(const char* host, GoTrue* gotrue_ptr);
 
     PostgRest& from(String table);
     PostgRest& select(String column);
     PostgRest& insert(String json);
     PostgRest& upsert(String json);
-    PostgRest& update(String json);
-    PostgRest& delete_();
+    // PostgRest& update(String json);
+    // PostgRest& delete_();
 
 
     PostgRest& eq(String column, String value);
@@ -71,13 +69,10 @@ class PostgRest {
 
     PostgRest& execute();
 
-    // Test
-    HttpResponse* checkResponse() { return this->response; }
-
     // Result
     bool checkError() { return this->error; }
     String checkErrorMessage() { return this->error_message; }
-    String checkResult() { return this->response->checkMessageBody(); }
+    String checkResult() { return this->result.message_body; }
 };
 
 #endif

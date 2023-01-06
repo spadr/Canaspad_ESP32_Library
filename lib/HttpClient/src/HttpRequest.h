@@ -5,18 +5,28 @@
 #include <WiFiClientSecure.h>
 #include <memory>
 
+struct Result {
+    String http_message = "";
+    String http_version = "";
+    int status_code = 0;
+    String reason_phrase = "";
+    HttpHeader headers;
+    String message_body = "";
+    bool network_error = false;
+    String error_message = "";
+};
+
 class HttpRequest {
   protected:
   private:
-    String host;
-    unsigned int port;
+    String host = "";
+    unsigned int port = 0;
 
     std::unique_ptr<WiFiClientSecure> _client_ptr =
         std::unique_ptr<WiFiClientSecure>(new WiFiClientSecure());
-    std::unique_ptr<HttpResponse> _response_ptr = std::unique_ptr<HttpResponse>(new HttpResponse());
-
     WiFiClientSecure* client_ptr = _client_ptr.get();
-    HttpResponse* response_ptr = _response_ptr.get();
+
+    HttpResponse* response_ptr;
 
     String path = "/";
     String params = "?";
@@ -24,16 +34,21 @@ class HttpRequest {
     String body = "";
     String request_line = "";
 
+    unsigned long timeout = 10000;
+
 
   public:
-    HttpRequest(String host, unsigned int port);
+    HttpRequest(HttpResponse* response_ptr);
     ~HttpRequest();
 
+    bool setCACert(const char* root_ca);
+    bool setCertificate(const char* client_cert);
+    bool setPrivateKey(const char* client_key);
     bool setInsecure();
+
+    bool setHost(String host);
+    bool setPort(unsigned int port);
     bool setPath(String path);
-    bool setCertificate(const char* cert);
-    bool setPrivateKey(const char* key);
-    bool setCACert(const char* cert);
 
     bool addParameter(String key, String value);
     bool addHeader(String key, String value);
@@ -46,7 +61,7 @@ class HttpRequest {
     bool methodIsDelete();
     bool methodIsHead();
 
-    HttpResponse* send();
+    Result send();
 
     bool end();
 

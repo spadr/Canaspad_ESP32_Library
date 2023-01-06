@@ -1,8 +1,9 @@
 #include "GoTrue.h"
 
-GoTrue::GoTrue(const char* path, const int port) {
+GoTrue::GoTrue(HttpClient* client_ptr, const char* path, const int port) {
     this->backend_path = path;
     this->backend_port = port;
+    this->client_ptr = client_ptr;
 }
 
 GoTrue::~GoTrue() {
@@ -12,21 +13,14 @@ GoTrue::~GoTrue() {
     this->refresh_token = "";
 }
 
-GoTrue& GoTrue::signIn(const char* host, const char* key, const char* username,
-                       const char* password, const char* auth_endpoint) {
+GoTrue& GoTrue::signIn(const char* host, const char* username, const char* password,
+                       const char* auth_endpoint) {
     if (host == nullptr || host[0] == 0) {
         this->error = true;
         this->error_message = "GoTrue: host is not set";
         return *this;
     }
     this->gotrue_host = host;
-
-    if (key == nullptr || key[0] == 0) {
-        this->error = true;
-        this->error_message = "GoTrue: key is not set";
-        return *this;
-    }
-    this->gotrue_key = key;
 
     if (auth_endpoint == nullptr || auth_endpoint[0] == 0) {
         this->error = true;
@@ -63,6 +57,13 @@ String GoTrue::useAccessToken() {
     unsigned long elapsed = millis() - this->signed_in_at;
     if (elapsed > this->expires_in - expiration_offset) {
         bool keepAuth = refreshAccessToken() || setAccessToken();
+        if (!keepAuth) {
+            this->is_signed_in = false;
+            this->access_token = "";
+            this->refresh_token = "";
+            this->error = true;
+            this->error_message = "GoTrue: access token is expired";
+        }
     }
     // TODO : if session
     return this->access_token;
@@ -73,39 +74,37 @@ bool GoTrue::setAccessToken() {
                           String(this->password) + "\"}";
 
     // send request to auth endpoint
-    HttpClient client(String(this->gotrue_host), this->backend_port);
-    client.setInsecure();
-    client.setPath(String(this->backend_path) + String(this->endpoint));
-    client.addParameter("grant_type", "password");
-    client.addHeader("Host", String(this->gotrue_host));
-    client.addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
-    client.addHeader("Content-Type", "application/json");
-    client.addHeader("apikey", String(this->gotrue_key));
-    client.addHeader("Content-Length", String(send_message.length()));
-    client.addHeader("Connection", "close");
-    client.setBody(send_message);
-    client.methodIsPost();
-    HttpResponse* res_ptr = client.send();
-    client.end();
+    client_ptr->setHost(String(this->gotrue_host));
+    client_ptr->setPort(this->backend_port);
+    client_ptr->setPath(String(this->backend_path) + String(this->endpoint));
+    client_ptr->addParameter("grant_type", "password");
+    client_ptr->addHeader("Host", String(this->gotrue_host));
+    client_ptr->addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
+    client_ptr->addHeader("Content-Type", "application/json");
+    client_ptr->addHeader("Content-Length", String(send_message.length()));
+    client_ptr->addHeader("Connection", "close");
+    client_ptr->setBody(send_message);
+    client_ptr->methodIsPost();
+    this->result = client_ptr->send();
+    client_ptr->end();
 
-    if (res_ptr->checkNetworkError()) {
+    if (this->result.network_error) {
         this->error = true;
         this->error_message =
-            "GoTrue: Network error is occured" + String(res_ptr->checkErrorMessage());
+            "GoTrue: Network error is occured" + String(this->result.error_message);
         return false;
     }
 
-    int status_code = res_ptr->checkStatusCode();
+    int status_code = this->result.status_code;
     if (status_code != 200) {
         this->error = true;
         this->error_message = "GoTrue: HTTP Request failed " + String(status_code) + " " +
-                              String(res_ptr->checkReasonPhrase());
+                              String(this->result.reason_phrase);
         return false;
     }
 
-
-    StaticJsonDocument<2048> doc;
-    DeserializationError deserialize_error = deserializeJson(doc, res_ptr->checkMessageBody());
+    DynamicJsonDocument doc(2048);
+    DeserializationError deserialize_error = deserializeJson(doc, this->result.message_body);
     if (deserialize_error) {
         this->error = true;
         this->error_message =
@@ -149,32 +148,31 @@ bool GoTrue::refreshAccessToken() {
     String send_message = "{\"refresh_token\":\"" + String(this->refresh_token) + "\"}";
 
     // send request to auth endpoint
-    HttpClient client(String(this->gotrue_host), this->backend_port);
-    client.setInsecure();
-    client.setPath(String(this->backend_path) + String(this->endpoint));
-    client.addParameter("grant_type", "refresh_token");
-    client.addHeader("Host", String(this->gotrue_host));
-    client.addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
-    client.addHeader("Content-Type", "application/json");
-    client.addHeader("apikey", String(this->gotrue_key));
-    client.addHeader("Content-Length", String(send_message.length()));
-    client.addHeader("Connection", "close");
-    client.setBody(send_message);
-    client.methodIsPost();
-    HttpResponse* res_ptr = client.send();
-    client.end();
+    client_ptr->setHost(String(this->gotrue_host));
+    client_ptr->setPort(this->backend_port);
+    client_ptr->setPath(String(this->backend_path) + String(this->endpoint));
+    client_ptr->addParameter("grant_type", "refresh_token");
+    client_ptr->addHeader("Host", String(this->gotrue_host));
+    client_ptr->addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
+    client_ptr->addHeader("Content-Type", "application/json");
+    client_ptr->addHeader("Content-Length", String(send_message.length()));
+    client_ptr->addHeader("Connection", "close");
+    client_ptr->setBody(send_message);
+    client_ptr->methodIsPost();
+    this->result = client_ptr->send();
+    client_ptr->end();
 
-    int status_code = res_ptr->checkStatusCode();
+    int status_code = this->result.status_code;
     if (int(status_code / 100) != 2) {
         this->error = true;
         this->error_message = "GoTrue: HTTP Request failed " + String(status_code) + " " +
-                              String(res_ptr->checkReasonPhrase());
+                              String(this->result.reason_phrase);
         return false;
     }
 
 
-    StaticJsonDocument<2048> doc;
-    DeserializationError deserialize_error = deserializeJson(doc, res_ptr->checkMessageBody());
+    DynamicJsonDocument doc(2048);
+    DeserializationError deserialize_error = deserializeJson(doc, this->result.message_body);
     if (deserialize_error) {
         this->error = true;
         this->error_message =

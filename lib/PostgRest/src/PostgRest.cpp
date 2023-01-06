@@ -1,37 +1,33 @@
 #include "PostgRest.h"
 
 
-PostgRest::PostgRest(const char* path, const int port) {
+PostgRest::PostgRest(HttpClient* client_ptr, const char* path, const int port) {
     this->backend_path = path;
     this->backend_port = port;
+    this->client_ptr = client_ptr;
 }
 
 
-PostgRest::~PostgRest() {
-    if (this->_client_ptr) {
-        _client_ptr.reset(nullptr);
-    }
-}
+PostgRest::~PostgRest() {}
 
-PostgRest& PostgRest::begin(const char* host, const char* key) {
+PostgRest& PostgRest::begin(const char* host) {
     this->backend_host = host;
-    this->backend_key = key;
-    this->_client_ptr =
-        std::unique_ptr<HttpClient>(new HttpClient(this->backend_host, this->backend_port));
-    this->client_ptr = _client_ptr.get();
-    this->client_ptr->setInsecure();
     return *this;
 }
 
-PostgRest& PostgRest::begin(const char* host, const char* key, GoTrue* gotrue_ptr) {
+PostgRest& PostgRest::begin(const char* host, GoTrue* gotrue_ptr) {
     this->backend_host = host;
-    this->backend_key = key;
     this->gotrue_ptr = gotrue_ptr;
     this->use_token = true;
-    this->_client_ptr =
-        std::unique_ptr<HttpClient>(new HttpClient(this->backend_host, this->backend_port));
-    this->client_ptr = _client_ptr.get();
-    this->client_ptr->setInsecure();
+
+    String access_token = this->gotrue_ptr->useAccessToken();
+    client_ptr->addHeader("Authorization", "Bearer " + access_token);
+    if (access_token == "") {
+        this->error = true;
+        this->error_message = "PostgRest: Access token is empty";
+        return *this;
+    }
+
     return *this;
 }
 
@@ -41,6 +37,7 @@ PostgRest& PostgRest::from(String table) {
 }
 
 PostgRest& PostgRest::select(String column) {
+    column.replace(" ", "");
     client_ptr->addParameter("select", column);
     client_ptr->methodIsGet();
     return *this;
@@ -63,19 +60,19 @@ PostgRest& PostgRest::upsert(String json) {
     return *this;
 }
 
-PostgRest& PostgRest::update(String json) {
+/*PostgRest& PostgRest::update(String json) {
     client_ptr->setBody(json);
     client_ptr->methodIsPatch();
     client_ptr->addHeader("Content-Length", String(json.length()));
     client_ptr->addHeader("Prefer", "return=representation");
     return *this;
-}
+}*/
 
-PostgRest& PostgRest::delete_() {
+/*PostgRest& PostgRest::delete_() {
     client_ptr->methodIsDelete();
     client_ptr->addHeader("Prefer", "return=representation");
     return *this;
-}
+}*/
 
 
 PostgRest& PostgRest::eq(String column, String value) {
@@ -237,37 +234,28 @@ PostgRest& PostgRest::execute() {
     client_ptr->addHeader("Host", String(this->backend_host));
     client_ptr->addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
     client_ptr->addHeader("Content-Type", "application/json");
-    client_ptr->addHeader("apikey", this->backend_key);
-
-    if (this->use_token) {
-        String access_token = this->gotrue_ptr->useAccessToken();
-        client_ptr->addHeader("Authorization", "Bearer " + access_token);
-    }
-
     client_ptr->addHeader("Connection", "close");
 
     // TODO : check if the client is ready to execute
-    HttpResponse* res_ptr = client_ptr->send();
-
+    this->result = client_ptr->send();
     client_ptr->end();
 
-    if (res_ptr->checkNetworkError()) {
+    if (this->result.network_error) {
         this->error = true;
         this->error_message =
-            "PostgRest: Network error is occured " + String(res_ptr->checkErrorMessage());
+            "PostgRest: Network error is occured " + String(this->result.error_message);
         return *this;
     }
 
-    int status_code = res_ptr->checkStatusCode();
-
-    if (int(status_code / 100) != 2) {
-        this->error = true;
-        this->error_message = "PostgRest: HTTP Request failed " + String(status_code) + " " +
-                              String(res_ptr->checkReasonPhrase());
+    int status_code = this->result.status_code;
+    if (status_code == 200 || status_code == 201) {
+        this->error = false;
+        this->error_message = "";
+        return *this;
     }
-    this->error = false;
-    this->error_message = "";
-    this->response = res_ptr;
 
+    this->error = true;
+    this->error_message = "PostgRest: HTTP Request failed " + String(status_code) + " " +
+                          String(this->result.reason_phrase);
     return *this;
 }

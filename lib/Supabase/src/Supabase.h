@@ -24,10 +24,11 @@ class Supabase {
     char* query;
     char* header;
 
-    HttpResponse response;
+    std::unique_ptr<HttpClient> _http_client_ptr;
+    HttpClient* http_client_ptr;
 
-    std::unique_ptr<HttpClient> _client_ptr;
-    HttpClient* client_ptr;
+    std::unique_ptr<HttpResponse> _http_response_ptr;
+    HttpResponse* http_response_ptr;
 
     std::unique_ptr<PostgRest> _postgrest_ptr;
     PostgRest* postgrest_ptr;
@@ -40,6 +41,14 @@ class Supabase {
     Supabase();
     ~Supabase();
 
+    void setCACert(const char* root_ca) { this->http_client_ptr->setCACert(root_ca); }
+
+    void setCertificate(const char* client_cert) {
+        this->http_client_ptr->setCertificate(client_cert);
+    }
+    void setPrivateKey(const char* client_key) { this->http_client_ptr->setPrivateKey(client_key); }
+    void setInsecure() { this->http_client_ptr->setInsecure(); }
+
     // Auth(SupabaseAuthKeeper)
     GoTrue* auth() { return this->gotrue_ptr; }
 
@@ -51,12 +60,7 @@ class Supabase {
     // bool download(char* bucket, char* file_path);
 
     // Test
-    HttpResponse CheckLatestHttpResponse() { return this->response; }
-    const char* checkTable() { return this->table; }
-    const char* checkColumn() { return this->column; }
-    const char* checkJson() { return this->json; }
-    const char* checkQuery() { return this->query; }
-    const char* checkHeader() { return this->header; }
+    // HttpResponse* CheckLatestHttpResponse() { return this->http_response_ptr; }
 };
 
 #endif

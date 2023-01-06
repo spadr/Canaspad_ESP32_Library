@@ -11,6 +11,9 @@ class CanaspadEndPoint {
     const char* tube = "/tube";                    // need to auth
     const char* element = "/element";              // need to auth
     const char* fresh_element = "/fresh_elements"; // need to auth
+    // Storage
+    const char* object = "/object";
+    const char* bucket = "/bucket";
 };
 
 #endif

@@ -6,7 +6,6 @@ HttpResponse::~HttpResponse() {}
 
 void HttpResponse::add(String line) {
     this->http_message += line;
-
     if (status_line) {
         status_line = false;
         int status_code_pos = line.indexOf(' ');

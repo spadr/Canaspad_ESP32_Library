@@ -14,7 +14,6 @@ class Canaspad {
 
   private:
     const char* api_host;
-    const char* api_key;
     const char* api_username;
     const char* api_password;
 
@@ -22,8 +21,9 @@ class Canaspad {
 
 
   public:
-    Canaspad(const char* host, const char* key, const char* username, const char* password,
-             const long offset_sec);
+    Canaspad(const char* host, const char* username, const char* password, const long offset_sec,
+             const char* root_ca = nullptr, const char* client_cert = nullptr,
+             const char* client_key = nullptr);
     ~Canaspad();
 
     int offset_hour;
@@ -34,15 +34,16 @@ class Canaspad {
     bool write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
                int utc_offset_hour);
     bool send(Tube& sensor);
-    void fetch(Tube& sensor, float* fresh_value_p, String* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, int* fresh_value_p, String* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, long* fresh_value_p, String* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, unsigned int* fresh_value_p, String* fresh_timestamp_p = nullptr);
-    void fetch(Tube& sensor, unsigned long* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    bool fetch(Tube& sensor, float* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    bool fetch(Tube& sensor, int* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    bool fetch(Tube& sensor, long* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    bool fetch(Tube& sensor, unsigned int* fresh_value_p, String* fresh_timestamp_p = nullptr);
+    bool fetch(Tube& sensor, unsigned long* fresh_value_p, String* fresh_timestamp_p = nullptr);
 
 
     String makeTimestampTz(int year, int month, int day, int hour, int minute, int second,
                            int utc_offset_hour);
+    String makeTimestamp(int year, int month, int day, int hour, int minute, int second);
 
     String checkErrorMessage() { return error_message; }
 };

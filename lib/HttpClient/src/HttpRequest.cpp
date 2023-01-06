@@ -1,25 +1,22 @@
 #include "HttpRequest.h"
 
 
-HttpRequest::HttpRequest(String host, unsigned int port) {
-    this->host = host;
-    this->port = port;
+HttpRequest::HttpRequest(HttpResponse* response_ptr) { this->response_ptr = response_ptr; }
+
+HttpRequest::~HttpRequest() {}
+
+bool HttpRequest::setCACert(const char* root_ca) {
+    this->client_ptr->setCACert(root_ca);
+    return true;
 }
 
-HttpRequest::~HttpRequest() {
-    if (this->client_ptr) {
-        this->client_ptr->stop();
-    }
-    if (this->_client_ptr) {
-        _client_ptr.reset(nullptr);
-    }
-    if (this->_response_ptr) {
-        _response_ptr.reset(nullptr);
-    }
+bool HttpRequest::setCertificate(const char* client_cert) {
+    this->client_ptr->setCertificate(client_cert);
+    return true;
 }
 
-bool HttpRequest::setPath(String path) {
-    this->path = path;
+bool HttpRequest::setPrivateKey(const char* client_key) {
+    this->client_ptr->setPrivateKey(client_key);
     return true;
 }
 
@@ -28,18 +25,18 @@ bool HttpRequest::setInsecure() {
     return true;
 }
 
-bool HttpRequest::setCertificate(const char* cert) {
-    this->client_ptr->setCertificate(cert);
+bool HttpRequest::setHost(String host) {
+    this->host = host;
     return true;
 }
 
-bool HttpRequest::setPrivateKey(const char* key) {
-    this->client_ptr->setPrivateKey(key);
+bool HttpRequest::setPort(unsigned int port) {
+    this->port = port;
     return true;
 }
 
-bool HttpRequest::setCACert(const char* cert) {
-    this->client_ptr->setCACert(cert);
+bool HttpRequest::setPath(String path) {
+    this->path = path;
     return true;
 }
 
@@ -93,16 +90,31 @@ bool HttpRequest::methodIsHead() {
     return true;
 }
 
-HttpResponse* HttpRequest::send() {
+Result HttpRequest::send() {
+    Result result;
+
+    if (this->host == "") {
+        result.network_error = true;
+        result.error_message = "Host is not set";
+        return result;
+    }
+
+    if (this->port == 0) {
+        result.network_error = true;
+        result.error_message = "Port is not set";
+        return result;
+    }
 
     if (!this->client_ptr->connect(this->host.c_str(), this->port)) {
-        this->response_ptr->putNetworkError("Connection failed");
-        return this->response_ptr;
+        result.network_error = true;
+        result.error_message = "Connection failed";
+        return result;
     }
 
     if (!this->client_ptr->connected()) {
-        this->response_ptr->putNetworkError("Connection lost");
-        return this->response_ptr;
+        result.network_error = true;
+        result.error_message = "Connection lost";
+        return result;
     }
 
     String request_target;
@@ -117,19 +129,23 @@ HttpResponse* HttpRequest::send() {
     this->client_ptr->print(this->request_line);
     this->client_ptr->print(this->header);
     this->client_ptr->print("\r\n");
+    // Serial.print(this->request_line);
+    // Serial.println(this->header);
 
     if (this->body != "") {
         this->client_ptr->print(this->body);
+        // Serial.println(this->body);
     }
     this->client_ptr->print("\r\n\r\n");
 
 
-    unsigned long timeout = millis();
+    unsigned long start = millis();
     while (client_ptr->available() == 0) {
-        if (millis() - timeout > 10000) {
+        if (millis() - start > this->timeout) {
             client_ptr->stop();
-            this->response_ptr->putNetworkError("Connection timeout");
-            return this->response_ptr;
+            result.network_error = true;
+            result.error_message = "Connection timeout";
+            return result;
         }
     }
 
@@ -138,10 +154,26 @@ HttpResponse* HttpRequest::send() {
         this->response_ptr->add(line);
     }
     this->response_ptr->concatChunk();
-    return this->response_ptr;
+
+
+    result.http_message = this->response_ptr->checkHttpMessage();
+    result.http_version = this->response_ptr->checkHttpVersion();
+    result.status_code = this->response_ptr->checkStatusCode();
+    result.reason_phrase = this->response_ptr->checkReasonPhrase();
+    result.headers = this->response_ptr->checkHeaders();
+    result.message_body = this->response_ptr->checkMessageBody();
+
+    this->response_ptr->end();
+
+    return result;
 }
 
 bool HttpRequest::end() {
     client_ptr->stop();
+    this->path = "/";
+    this->params = "?";
+    this->header = "";
+    this->body = "";
+    this->request_line = "";
     return true;
 }

@@ -172,7 +172,7 @@ String Tube::timestamp() {
 
 String Tube::elementParse() {
     if (!token_empty && !element_empty && !timestamp_empty) {
-        StaticJsonDocument<200> doc;
+        DynamicJsonDocument doc(256);
         doc["tube_token"] = this->token;
         doc["created_at"] = element_ptr->savedTimestamp();
         if (float_value_ptr != nullptr) {
@@ -207,4 +207,62 @@ String Tube::elementParse() {
         return "";
     }
     return "";
+}
+
+bool Tube::parsedElementIs(String json) {
+    if (!token_empty && !element_empty && !timestamp_empty) {
+        DynamicJsonDocument doc(2048);
+        DeserializationError error = deserializeJson(doc, json);
+        if (error) {
+            this->error = true;
+            this->error_message = "json deserialize failed";
+            return false;
+        }
+        if (doc[0] == nullptr) {
+            this->error = true;
+            this->error_message = "No element found";
+            return false;
+        }
+
+        String timestamp = element_ptr->savedTimestamp();
+        String rep_timestamp = doc[0]["created_at"].as<String>();
+        timestamp.replace(" ", "T");
+        int timezone_pos = timestamp.indexOf('+');
+        if (timezone_pos == -1) {
+            timezone_pos = timestamp.indexOf('-');
+        }
+        timestamp = timestamp.substring(0, timezone_pos);
+
+        if (float_value_ptr != nullptr) {
+            float value;
+            element_ptr->savedValue(&value);
+            float rep_value = doc[0]["value"].as<float>();
+            return value == rep_value && timestamp == rep_timestamp;
+        } else if (int_value_ptr != nullptr) {
+            int value;
+            element_ptr->savedValue(&value);
+            int rep_value = doc[0]["value"].as<int>();
+            return value == rep_value && timestamp == rep_timestamp;
+        } else if (long_value_ptr != nullptr) {
+            long value;
+            element_ptr->savedValue(&value);
+            long rep_value = doc[0]["value"].as<long>();
+            return value == rep_value && timestamp == rep_timestamp;
+        } else if (unsigned_int_value_ptr != nullptr) {
+            unsigned int value;
+            element_ptr->savedValue(&value);
+            unsigned int rep_value = doc[0]["value"].as<unsigned int>();
+            return value == rep_value && timestamp == rep_timestamp;
+        } else if (unsigned_long_value_ptr != nullptr) {
+            unsigned long value;
+            element_ptr->savedValue(&value);
+            unsigned long rep_value = doc[0]["value"].as<unsigned long>();
+            return value == rep_value && timestamp == rep_timestamp;
+        }
+
+    } else {
+        // Error
+        return false;
+    }
+    return false;
 }

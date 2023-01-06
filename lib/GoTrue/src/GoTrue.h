@@ -7,8 +7,9 @@
 class GoTrue {
   protected:
   private:
+    HttpClient* client_ptr;
+
     const char* gotrue_host;
-    const char* gotrue_key;
 
     const char* backend_path = "";
     const char* endpoint = "";
@@ -24,22 +25,20 @@ class GoTrue {
     String access_token;  // TODO encryption
     String refresh_token; // TODO encryption
 
-    // HttpResponse response;
     bool error = false;
     String error_message = "";
+    Result result;
 
     bool setAccessToken();
     bool refreshAccessToken();
 
 
   public:
-    GoTrue(const char* path, const int port);
+    GoTrue(HttpClient* client_ptr, const char* path, const int port);
     ~GoTrue();
 
-    GoTrue& signIn(const char* host, const char* key = NULL, const char* username = NULL,
-                   const char* password = NULL, const char* auth_endpoint = NULL);
-    GoTrue& keepAuth();
-
+    GoTrue& signIn(const char* host, const char* username = NULL, const char* password = NULL,
+                   const char* auth_endpoint = NULL);
     String useAccessToken();
 
     // Test
