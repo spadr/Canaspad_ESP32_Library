@@ -8,31 +8,31 @@
 class PostgRest {
   protected:
   private:
-    HttpClient* client_ptr;
+    HttpClient** client_pp;
 
     const char* backend_host;
     int backend_port;
     const char* backend_path;
 
     bool use_token = false;
-    GoTrue* gotrue_ptr;
+    GoTrue** gotrue_pp;
 
     bool error = false;
     String error_message = "";
     Result result;
 
   public:
-    PostgRest(HttpClient* client_ptr, const char* path, const int port);
+    PostgRest(HttpClient** client_pp, const char* path, const int port);
     ~PostgRest();
 
     PostgRest& begin(const char* host);
-    PostgRest& begin(const char* host, GoTrue* gotrue_ptr);
+    PostgRest& begin(const char* host, GoTrue** gotrue_pp);
 
     PostgRest& from(String table);
     PostgRest& select(String column);
     PostgRest& insert(String json);
     PostgRest& upsert(String json);
-    // PostgRest& update(String json);
+    PostgRest& update(String json);
     // PostgRest& delete_();
 
 

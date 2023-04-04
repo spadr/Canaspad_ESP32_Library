@@ -74,7 +74,7 @@ bool Element::savedValue(unsigned long* value) {
     return true;
 }
 
-String Element::savedTimestamp() { return timestamp; }
+String Element::savedTimestamp() { return this->timestamp; }
 
 bool Element::savedValueIs(float value) { return value == nucleus_ptr->getFloat(); }
 

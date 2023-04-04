@@ -4,4 +4,3 @@
 .vscode/launch.json
 .vscode/ipch
 /src/Config.h
-/test/test_embedded/Config.h

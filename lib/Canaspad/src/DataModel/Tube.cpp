@@ -9,7 +9,6 @@ Tube::Tube(float* sensing_value) {
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
 
@@ -26,7 +25,6 @@ Tube::Tube(int* sensing_value) {
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
 
@@ -43,7 +41,6 @@ Tube::Tube(long* sensing_value) {
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
 
@@ -60,7 +57,6 @@ Tube::Tube(unsigned int* sensing_value) {
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
 
@@ -77,13 +73,13 @@ Tube::Tube(unsigned long* sensing_value) {
     this->token = "init";
     this->channel = "init";
     this->name = "init";
-    this->element_empty = true;
     this->token_empty = true;
     this->timestamp_empty = true;
 
     this->_element_ptr = std::unique_ptr<Element>(new Element());
     this->element_ptr = _element_ptr.get();
 }
+
 
 Tube::~Tube() {
     if (this->_element_ptr) {
@@ -102,24 +98,19 @@ bool Tube::begin(String channel, String name, String token) {
 bool Tube::add(String timestamp) {
     // TODO : Test
     if (float_value_ptr != nullptr) {
-        element_empty = false;
-        timestamp_empty = false;
+        this->timestamp_empty = false;
         return element_ptr->append(float_value_ptr, timestamp);
     } else if (int_value_ptr != nullptr) {
-        element_empty = false;
-        timestamp_empty = false;
+        this->timestamp_empty = false;
         return element_ptr->append(int_value_ptr, timestamp);
     } else if (long_value_ptr != nullptr) {
-        element_empty = false;
-        timestamp_empty = false;
+        this->timestamp_empty = false;
         return element_ptr->append(long_value_ptr, timestamp);
     } else if (unsigned_int_value_ptr != nullptr) {
-        element_empty = false;
-        timestamp_empty = false;
+        this->timestamp_empty = false;
         return element_ptr->append(unsigned_int_value_ptr, timestamp);
     } else if (unsigned_long_value_ptr != nullptr) {
-        element_empty = false;
-        timestamp_empty = false;
+        this->timestamp_empty = false;
         return element_ptr->append(unsigned_long_value_ptr, timestamp);
     } else {
         // Error
@@ -127,40 +118,16 @@ bool Tube::add(String timestamp) {
     }
 }
 
-void Tube::value(float* pick_value) {
-    if (element_empty) {
-        // Error
-    }
-    element_ptr->savedValue(pick_value);
-}
+void Tube::value(float* pick_value) { element_ptr->savedValue(pick_value); }
 
-void Tube::value(int* pick_value) {
-    if (element_empty) {
-        // Error
-    }
-    element_ptr->savedValue(pick_value);
-}
+void Tube::value(int* pick_value) { element_ptr->savedValue(pick_value); }
 
-void Tube::value(long* pick_value) {
-    if (element_empty) {
-        // Error
-    }
-    element_ptr->savedValue(pick_value);
-}
+void Tube::value(long* pick_value) { element_ptr->savedValue(pick_value); }
 
-void Tube::value(unsigned int* pick_value) {
-    if (element_empty) {
-        // Error
-    }
-    element_ptr->savedValue(pick_value);
-}
+void Tube::value(unsigned int* pick_value) { element_ptr->savedValue(pick_value); }
 
-void Tube::value(unsigned long* pick_value) {
-    if (element_empty) {
-        // Error
-    }
-    element_ptr->savedValue(pick_value);
-}
+void Tube::value(unsigned long* pick_value) { element_ptr->savedValue(pick_value); }
+
 
 String Tube::timestamp() {
     if (timestamp_empty) {
@@ -169,9 +136,8 @@ String Tube::timestamp() {
     return element_ptr->savedTimestamp();
 }
 
-
-String Tube::elementParse() {
-    if (!token_empty && !element_empty && !timestamp_empty) {
+String Tube::toJson() {
+    if (!token_empty && !timestamp_empty) {
         DynamicJsonDocument doc(256);
         doc["tube_token"] = this->token;
         doc["created_at"] = element_ptr->savedTimestamp();
@@ -209,13 +175,14 @@ String Tube::elementParse() {
     return "";
 }
 
+
 bool Tube::parsedElementIs(String json) {
-    if (!token_empty && !element_empty && !timestamp_empty) {
+    if (!token_empty && !timestamp_empty) {
         DynamicJsonDocument doc(2048);
         DeserializationError error = deserializeJson(doc, json);
         if (error) {
             this->error = true;
-            this->error_message = "json deserialize failed";
+            this->error_message = "Json deserialize failed";
             return false;
         }
         if (doc[0] == nullptr) {

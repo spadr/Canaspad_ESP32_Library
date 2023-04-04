@@ -48,5 +48,4 @@ const char* client_cert = "-----BEGIN CERTIFICATE-----\n"
 const char* client_key = "-----BEGIN PRIVATE KEY-----\n"
                          "-----END PRIVATE KEY-----\n";
 
-
 #endif

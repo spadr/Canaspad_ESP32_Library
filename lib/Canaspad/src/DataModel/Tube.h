@@ -14,7 +14,6 @@ class Tube {
     String token;
     String channel;
     String name;
-    bool element_empty;
     bool token_empty;
     bool timestamp_empty;
 
@@ -46,7 +45,7 @@ class Tube {
     void value(unsigned int* pick_value);
     void value(unsigned long* pick_value);
     String timestamp();
-    String elementParse();
+    String toJson();
 
     String checkToken() { return this->token; }
 

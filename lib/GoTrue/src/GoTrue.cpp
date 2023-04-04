@@ -1,9 +1,9 @@
 #include "GoTrue.h"
 
-GoTrue::GoTrue(HttpClient* client_ptr, const char* path, const int port) {
+GoTrue::GoTrue(HttpClient** client_pp, const char* path, const int port) {
     this->backend_path = path;
     this->backend_port = port;
-    this->client_ptr = client_ptr;
+    this->client_pp = client_pp;
 }
 
 GoTrue::~GoTrue() {
@@ -70,38 +70,42 @@ String GoTrue::useAccessToken() {
 }
 
 bool GoTrue::setAccessToken() {
+    HttpClient& client = **this->client_pp;
     String send_message = "{\"email\":\"" + String(this->email) + "\",\"password\":\"" +
                           String(this->password) + "\"}";
 
     // send request to auth endpoint
-    client_ptr->setHost(String(this->gotrue_host));
-    client_ptr->setPort(this->backend_port);
-    client_ptr->setPath(String(this->backend_path) + String(this->endpoint));
-    client_ptr->addParameter("grant_type", "password");
-    client_ptr->addHeader("Host", String(this->gotrue_host));
-    client_ptr->addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
-    client_ptr->addHeader("Content-Type", "application/json");
-    client_ptr->addHeader("Content-Length", String(send_message.length()));
-    client_ptr->addHeader("Connection", "close");
-    client_ptr->setBody(send_message);
-    client_ptr->methodIsPost();
-    this->result = client_ptr->send();
-    client_ptr->end();
+    client.setHost(String(this->gotrue_host));
+    client.setPort(this->backend_port);
+    client.setPath(String(this->backend_path) + String(this->endpoint));
+    client.addParameter("grant_type", "password");
+    client.addHeader("Host", String(this->gotrue_host));
+    client.addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
+    client.addHeader("Content-Type", "application/json");
+    client.addHeader("Content-Length", String(send_message.length()));
+    client.addHeader("Connection", "close");
+    client.setBody(send_message);
+    client.methodIsPost();
+    this->result = client.send();
+    client.end();
 
-    if (this->result.network_error) {
-        this->error = true;
-        this->error_message =
-            "GoTrue: Network error is occured" + String(this->result.error_message);
-        return false;
+    if (!this->result.ok) {
+        if (this->result.network_error) {
+            this->error = true;
+            this->error_message =
+                "GoTrue: Network error is occured" + String(this->result.error_message);
+            return false;
+        }
+
+        int status_code = this->result.status_code;
+        if (status_code != 200) {
+            this->error = true;
+            this->error_message = "GoTrue: HTTP Request failed " + String(status_code) + " " +
+                                  String(this->result.reason_phrase);
+            return false;
+        }
     }
 
-    int status_code = this->result.status_code;
-    if (status_code != 200) {
-        this->error = true;
-        this->error_message = "GoTrue: HTTP Request failed " + String(status_code) + " " +
-                              String(this->result.reason_phrase);
-        return false;
-    }
 
     DynamicJsonDocument doc(2048);
     DeserializationError deserialize_error = deserializeJson(doc, this->result.message_body);
@@ -148,19 +152,20 @@ bool GoTrue::refreshAccessToken() {
     String send_message = "{\"refresh_token\":\"" + String(this->refresh_token) + "\"}";
 
     // send request to auth endpoint
-    client_ptr->setHost(String(this->gotrue_host));
-    client_ptr->setPort(this->backend_port);
-    client_ptr->setPath(String(this->backend_path) + String(this->endpoint));
-    client_ptr->addParameter("grant_type", "refresh_token");
-    client_ptr->addHeader("Host", String(this->gotrue_host));
-    client_ptr->addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
-    client_ptr->addHeader("Content-Type", "application/json");
-    client_ptr->addHeader("Content-Length", String(send_message.length()));
-    client_ptr->addHeader("Connection", "close");
-    client_ptr->setBody(send_message);
-    client_ptr->methodIsPost();
-    this->result = client_ptr->send();
-    client_ptr->end();
+    HttpClient& client = **this->client_pp;
+    client.setHost(String(this->gotrue_host));
+    client.setPort(this->backend_port);
+    client.setPath(String(this->backend_path) + String(this->endpoint));
+    client.addParameter("grant_type", "refresh_token");
+    client.addHeader("Host", String(this->gotrue_host));
+    client.addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
+    client.addHeader("Content-Type", "application/json");
+    client.addHeader("Content-Length", String(send_message.length()));
+    client.addHeader("Connection", "close");
+    client.setBody(send_message);
+    client.methodIsPost();
+    this->result = client.send();
+    client.end();
 
     int status_code = this->result.status_code;
     if (int(status_code / 100) != 2) {

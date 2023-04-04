@@ -2,6 +2,7 @@
 #define Canaspad_h
 
 #include "ApiEndPoint.h"
+#include "DataModel/Film.h"
 #include "DataModel/Tube.h"
 #include <ArduinoJson.h>
 #include <Supabase.h>
@@ -29,6 +30,7 @@ class Canaspad {
     int offset_hour;
 
     bool login();
+
     bool token(Tube& sensor, String const channel, String const name);
     bool createToken(Tube& sensor, String const channel, String const name);
     bool write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
@@ -40,10 +42,16 @@ class Canaspad {
     bool fetch(Tube& sensor, unsigned int* fresh_value_p, String* fresh_timestamp_p = nullptr);
     bool fetch(Tube& sensor, unsigned long* fresh_value_p, String* fresh_timestamp_p = nullptr);
 
+    bool token(Film& sensor, String const channel, String const name);
+    bool createToken(Film& sensor, String const channel, String const name);
+    bool write(Film& sensor, int year, int month, int day, int hour, int minute, int second,
+               int utc_offset_hour);
+    bool send(Film& sensor);
+    bool fetch(Film& sensor, uint8_t* fresh_value_p, String* fresh_timestamp_p = nullptr);
+
 
     String makeTimestampTz(int year, int month, int day, int hour, int minute, int second,
                            int utc_offset_hour);
-    String makeTimestamp(int year, int month, int day, int hour, int minute, int second);
 
     String checkErrorMessage() { return error_message; }
 };

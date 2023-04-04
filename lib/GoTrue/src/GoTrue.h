@@ -7,7 +7,7 @@
 class GoTrue {
   protected:
   private:
-    HttpClient* client_ptr;
+    HttpClient** client_pp;
 
     const char* gotrue_host;
 
@@ -34,7 +34,7 @@ class GoTrue {
 
 
   public:
-    GoTrue(HttpClient* client_ptr, const char* path, const int port);
+    GoTrue(HttpClient** client_pp, const char* path, const int port);
     ~GoTrue();
 
     GoTrue& signIn(const char* host, const char* username = NULL, const char* password = NULL,

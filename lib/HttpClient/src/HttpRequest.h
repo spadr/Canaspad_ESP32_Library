@@ -6,6 +6,7 @@
 #include <memory>
 
 struct Result {
+    bool ok = false;
     String http_message = "";
     String http_version = "";
     int status_code = 0;
@@ -33,8 +34,11 @@ class HttpRequest {
     String header = "";
     String body = "";
     String request_line = "";
+    uint8_t* file_data = nullptr;
+    size_t file_size = 0;
+    bool file_mode = false;
 
-    unsigned long timeout = 10000;
+    unsigned long timeout = 50000;
 
 
   public:
@@ -53,6 +57,7 @@ class HttpRequest {
     bool addParameter(String key, String value);
     bool addHeader(String key, String value);
     bool setBody(String body);
+    bool setFile(uint8_t* payload, size_t size);
 
     bool methodIsGet();
     bool methodIsPost();

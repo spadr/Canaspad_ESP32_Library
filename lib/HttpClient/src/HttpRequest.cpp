@@ -60,6 +60,13 @@ bool HttpRequest::setBody(String body) {
     return true;
 }
 
+bool HttpRequest::setFile(uint8_t* data, size_t size) {
+    this->file_data = data;
+    this->file_size = size;
+    this->file_mode = true;
+    return true;
+}
+
 bool HttpRequest::methodIsGet() {
     this->request_line = "GET";
     return true;
@@ -129,13 +136,24 @@ Result HttpRequest::send() {
     this->client_ptr->print(this->request_line);
     this->client_ptr->print(this->header);
     this->client_ptr->print("\r\n");
-    // Serial.print(this->request_line);
-    // Serial.println(this->header);
 
-    if (this->body != "") {
-        this->client_ptr->print(this->body);
-        // Serial.println(this->body);
+    if (this->file_mode) {
+        if (this->file_data != nullptr && this->file_size != 0) {
+            const size_t chunk_size = 2048;
+            size_t sent_bytes = 0;
+            while (sent_bytes < this->file_size) {
+                size_t remaining_bytes = this->file_size - sent_bytes;
+                size_t sending_bytes = min(remaining_bytes, chunk_size);
+                this->client_ptr->write(&this->file_data[sent_bytes], sending_bytes);
+                sent_bytes += sending_bytes;
+            }
+        }
+    } else {
+        if (this->body != "") {
+            this->client_ptr->print(this->body);
+        }
     }
+
     this->client_ptr->print("\r\n\r\n");
 
 
@@ -162,6 +180,7 @@ Result HttpRequest::send() {
     result.reason_phrase = this->response_ptr->checkReasonPhrase();
     result.headers = this->response_ptr->checkHeaders();
     result.message_body = this->response_ptr->checkMessageBody();
+    result.ok = true;
 
     this->response_ptr->end();
 
@@ -175,5 +194,8 @@ bool HttpRequest::end() {
     this->header = "";
     this->body = "";
     this->request_line = "";
+    this->file_data = nullptr;
+    this->file_size = 0;
+    this->file_mode = false;
     return true;
 }

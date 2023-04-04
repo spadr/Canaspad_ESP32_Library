@@ -5,6 +5,7 @@
 #include <GoTrue.h>
 #include <HttpClient.h>
 #include <PostgRest.h>
+#include <Storage.h>
 #include <memory>
 
 
@@ -30,11 +31,14 @@ class Supabase {
     std::unique_ptr<HttpResponse> _http_response_ptr;
     HttpResponse* http_response_ptr;
 
+    std::unique_ptr<GoTrue> _gotrue_ptr;
+    GoTrue* gotrue_ptr;
+
     std::unique_ptr<PostgRest> _postgrest_ptr;
     PostgRest* postgrest_ptr;
 
-    std::unique_ptr<GoTrue> _gotrue_ptr;
-    GoTrue* gotrue_ptr;
+    std::unique_ptr<Storage> _storage_ptr;
+    Storage* storage_ptr;
 
 
   public:
@@ -50,14 +54,13 @@ class Supabase {
     void setInsecure() { this->http_client_ptr->setInsecure(); }
 
     // Auth(SupabaseAuthKeeper)
-    GoTrue* auth() { return this->gotrue_ptr; }
+    GoTrue** auth() { return &this->gotrue_ptr; }
 
     // Rest(SupabasePostgreHandler)
-    PostgRest* rest() { return this->postgrest_ptr; }
+    PostgRest** rest() { return &this->postgrest_ptr; }
 
     // Storage(SupabaseStorageHandler)
-    // bool upload(char* bucket, char* file_path);
-    // bool download(char* bucket, char* file_path);
+    Storage** storage() { return &this->storage_ptr; }
 
     // Test
     // HttpResponse* CheckLatestHttpResponse() { return this->http_response_ptr; }
