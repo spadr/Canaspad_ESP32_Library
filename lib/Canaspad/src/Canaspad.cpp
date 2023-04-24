@@ -35,7 +35,7 @@ bool Canaspad::login() {
     return auth_client.checkAuthStatus();
 }
 
-bool Canaspad::token(Tube& sensor, String const channel, String const name) {
+bool Canaspad::connect(Tube& sensor, String const channel, String const name) {
     // Get TUBE record if channel and name exist
     GoTrue** auth_client_pp = supabase.auth();
     PostgRest** db_client_pp = supabase.rest();
@@ -68,7 +68,7 @@ bool Canaspad::token(Tube& sensor, String const channel, String const name) {
     return true;
 }
 
-bool Canaspad::createToken(Tube& sensor, String const channel, String const name) {
+bool Canaspad::createConnection(Tube& sensor, String const channel, String const name) {
     // TODO: Create TUBE record
     String json = "{\"channel\":\"" + channel + "\",\"name\":\"" + name + "\"}";
     GoTrue** auth_client_pp = supabase.auth();
@@ -381,7 +381,7 @@ String Canaspad::makeTimestampTz(int year, int month, int day, int hour, int min
     return timestamp;
 }
 
-bool Canaspad::token(Film& sensor, String const channel, String const name) {
+bool Canaspad::connect(Film& sensor, String const channel, String const name) {
     // Get TUBE record if channel and name exist
     GoTrue** auth_client_pp = supabase.auth();
     PostgRest** db_client_pp = supabase.rest();
@@ -418,7 +418,7 @@ bool Canaspad::token(Film& sensor, String const channel, String const name) {
     return true;
 }
 
-bool Canaspad::createToken(Film& sensor, String const channel, String const name) {
+bool Canaspad::createConnection(Film& sensor, String const channel, String const name) {
     // TODO: Create TUBE record
     String json = "{\"channel\":\"" + channel + "\",\"name\":\"" + name + "\"}";
     GoTrue** auth_client_pp = supabase.auth();

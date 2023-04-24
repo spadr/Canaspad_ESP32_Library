@@ -20,6 +20,8 @@ class Canaspad {
 
     String error_message;
 
+    bool createConnection(Tube& sensor, String const channel, String const name);
+    bool createConnection(Film& sensor, String const channel, String const name);
 
   public:
     Canaspad(const char* host, const char* username, const char* password, const long offset_sec,
@@ -31,8 +33,7 @@ class Canaspad {
 
     bool login();
 
-    bool token(Tube& sensor, String const channel, String const name);
-    bool createToken(Tube& sensor, String const channel, String const name);
+    bool connect(Tube& sensor, String const channel, String const name);
     bool write(Tube& sensor, int year, int month, int day, int hour, int minute, int second,
                int utc_offset_hour);
     bool send(Tube& sensor);
@@ -42,8 +43,7 @@ class Canaspad {
     bool fetch(Tube& sensor, unsigned int* fresh_value_p, String* fresh_timestamp_p = nullptr);
     bool fetch(Tube& sensor, unsigned long* fresh_value_p, String* fresh_timestamp_p = nullptr);
 
-    bool token(Film& sensor, String const channel, String const name);
-    bool createToken(Film& sensor, String const channel, String const name);
+    bool connect(Film& sensor, String const channel, String const name);
     bool write(Film& sensor, int year, int month, int day, int hour, int minute, int second,
                int utc_offset_hour);
     bool send(Film& sensor);

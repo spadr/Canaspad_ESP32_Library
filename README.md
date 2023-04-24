@@ -6,7 +6,7 @@ Canaspad is an IoT data analytics infrastructure! You can send and receive data 
 
 # Architecture
 
-# What is a tube and element?
+# What is a Tube and Film?
 
 # Installation
 1. Register with your email address and password at canaspad.com
@@ -21,19 +21,19 @@ Canaspad is an IoT data analytics infrastructure! You can send and receive data 
 
 # Reference
 
-## Canaspad::begin()
+## Canaspad::login()
 
 
 
 ### Description
 
-Check the connection to the cloud server.
+Login to the Canaspad API.
 
 ### Syntax
 
 ```arduino
 #include “Canaspad.h”
-bool Canaspad::begin();
+bool Canaspad::login();
 ```
 
 ### Argument
@@ -50,7 +50,7 @@ None
     Error
     
 
-## Canaspad::set()
+## Canaspad::connect()
 
 
 
@@ -62,22 +62,23 @@ For each channel and series name, a token is generated that identifies where the
 
 ```arduino
 #include “Canaspad.h”
-bool Canaspad::set(String const channel, String const name, Tube &sensor_config);
+bool Canaspad::connect(Tube& sensor, String const channel, String const name);
+bool Canaspad::connect(Film& sensor, String const channel, String const name);
 ```
 
 ### Argument
 
+- Tube& or Film& **sensor**
+    
+    Tube or Film object
+
 - String **channel**
     
-    tube channel
+    channel
     
 - String **name**
     
-    tube name
-    
-- Tube **&sensor_config**
-    
-    tube object
+    name
     
 
 ### Return value
@@ -103,31 +104,42 @@ Record sensor readings in microcontroller
 
 ```arduino
 #include “Canaspad.h”
-bool Canaspad::write(struct tm &timeInfo, Tube &sensor_config);
+bool Canaspad::write(Tube& sensor, int year, int month, int day, int hour, int minute, int second, int utc_offset_hour);
+bool Canaspad::write(Film& sensor, int year, int month, int day, int hour, int minute, int second, int utc_offset_hour);
 ```
 
 ### Argument
     
-- struct tm **&timeInfo**
+- Tube& or Film& **sensor**
     
-- Tube **&sensor_config**
-    
-    tube object
+    Tube or Film object
+
+- int **year**
+
+- int **month**
+
+- int **day**
+
+- int **hour**
+
+- int **minute**
+
+- int **second**
+
+- int **utc_offset_hour**
 
 ### Return value
 
 - bool **true**
     
     Success
-    
+
 - bool **false**
-    
+
     Error
-    
+
 
 ## Canaspad::send()
-
-
 
 ### Description
 
@@ -137,55 +149,66 @@ Send sensor readings stored in the microcontroller to the server.
 
 ```arduino
 #include “Canaspad.h”
-int Canaspad::send(Tube &sensor_config);
+bool Canaspad::send(Tube& sensor);
+bool Canaspad::send(Film& sensor);
 ```
 
 ### Argument
 
-- Tube **&sensor_config**
+- Tube& or Film& **sensor**
     
-    tube object
+    Tube or Film object
 
 ### Return value
 
-- uint8_t **HttpCode**
+- bool **true**
     
-    HTTP Status Code
+    Success
 
-    
+- bool **false**
+
+    Error
 
 ## Canaspad::fetch()
 
-
-
 ### Description
 
-Returns the most recent value from the selected Tube object.
+Fetch most recent sensor readings from the server.
 
 ### Syntax
 
 ```arduino
 #include “Canaspad.h”
-void Canaspad::fetch(float *fresh_value, Tube &sensor_config);
-void Canaspad::fetch(int *fresh_value, Tube &sensor_config);
-void Canaspad::fetch(long *fresh_value, Tube &sensor_config);
-void Canaspad::fetch(unsigned int *fresh_value, Tube &sensor_config);
-void Canaspad::fetch(unsigned long *fresh_value, Tube &sensor_config);
+bool Canaspad::fetch(Tube& sensor, float* fresh_value_p, String* fresh_timestamp_p = nullptr);
+bool Canaspad::fetch(Tube& sensor, int* fresh_value_p, String* fresh_timestamp_p = nullptr);
+bool Canaspad::fetch(Tube& sensor, long* fresh_value_p, String* fresh_timestamp_p = nullptr);
+bool Canaspad::fetch(Tube& sensor, unsigned int* fresh_value_p, String* fresh_timestamp_p = nullptr);
+bool Canaspad::fetch(Tube& sensor, unsigned long* fresh_value_p, String* fresh_timestamp_p = nullptr);
+bool Canaspad::fetch(Film& sensor, uint8_t* fresh_value_p, String* fresh_timestamp_p = nullptr);
 ```
 
 ### Argument
 
-- float* **fresh_value**
+- Tube& or Film& **sensor**
     
-    pointer to variable to be referenced
+    Tube or Film object
 
-- Tube **&sensor_config**
+- float* or int* or long* or unsigned int* or unsigned long* or uint8_t* **fresh_value_p**
+
+    Pointer to the variable where the value will be stored.
+
+- String* **fresh_timestamp_p**
     
-    tube object
-    
-    
-    
+    Pointer to the variable where the timestamp will be stored.
 
 ### Return value
 
-None
+- bool **true**
+    
+    Success
+
+- bool **false**
+
+    Error
+
+

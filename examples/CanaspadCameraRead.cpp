@@ -64,7 +64,7 @@ void setup() {
     }
 
     // Get the Film token
-    if (apiClient.token(image_sensor, "ch01", "name01")) {
+    if (apiClient.connect(image_sensor, "ch01", "name01")) {
         Serial.println("Received Film token successfully!");
     } else {
         Serial.println("Failed to receive Tube token!");

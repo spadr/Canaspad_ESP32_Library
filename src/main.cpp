@@ -67,14 +67,14 @@ void setup() {
     }
 
     // Get the Tube token
-    if (apiClient.token(voltage_sensor, "ch01", "name01")) {
+    if (apiClient.connect(voltage_sensor, "ch01", "name01")) {
         Serial.println("Received Tube token successfully!");
     } else {
         Serial.println("Failed to receive Tube token!");
     }
 
     // Get the Film token
-    if (apiClient.token(image_sensor, "ch01", "name01")) {
+    if (apiClient.connect(image_sensor, "ch01", "name01")) {
         Serial.println("Received Film token successfully!");
     } else {
         Serial.println("Failed to receive Tube token!");
@@ -86,6 +86,11 @@ void setup() {
     esp_err_t err = esp_camera_init(&config);
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x", err);
+    }
+
+    while (1) {
+        Serial.println("stop");
+        delay(1000);
     }
 }
 

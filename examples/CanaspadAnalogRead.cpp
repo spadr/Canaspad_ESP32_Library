@@ -34,7 +34,7 @@ void setup() {
     }
 
     // Get the Tube token
-    if (apiClient.token(voltage_sensor, "ch01", "name01")) {
+    if (apiClient.connect(voltage_sensor, "ch01", "name01")) {
         Serial.println("Received Tube token successfully!");
     } else {
         Serial.println("Failed to receive Tube token!");
