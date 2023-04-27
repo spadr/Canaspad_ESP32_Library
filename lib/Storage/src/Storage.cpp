@@ -1,10 +1,7 @@
 #include "Storage.h"
 
-Storage::Storage(HttpClient** client_pp, const char* path, const int port) {
-    this->backend_path = path;
-    this->backend_port = port;
-    this->client_pp = client_pp;
-}
+Storage::Storage(HttpClient** client_pp, const char* path, const int port)
+    : backend_path(path), backend_port(port), client_pp(client_pp) {}
 
 
 Storage::~Storage() {}
@@ -128,6 +125,7 @@ Storage& Storage::upload(String file_name, ContentType content_type, uint8_t* pa
 
 Storage& Storage::execute() {
     HttpClient& http_client = **client_pp;
+    http_client.setPort(this->backend_port);
     http_client.setPath(String(this->backend_path) + this->storage_path + this->file_name);
     this->result = http_client.send();
     http_client.end();
@@ -143,7 +141,7 @@ Storage& Storage::execute() {
         }
 
         int status_code = this->result.status_code;
-        if (status_code == 200 || status_code == 201) {
+        if (status_code >= 200 && status_code < 300) {
             this->error = false;
             this->error_message = "";
             return *this;

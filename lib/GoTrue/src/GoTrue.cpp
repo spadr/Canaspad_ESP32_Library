@@ -1,10 +1,7 @@
 #include "GoTrue.h"
 
-GoTrue::GoTrue(HttpClient** client_pp, const char* path, const int port) {
-    this->backend_path = path;
-    this->backend_port = port;
-    this->client_pp = client_pp;
-}
+GoTrue::GoTrue(HttpClient** client_pp, const char* path, const int port)
+    : backend_path(path), backend_port(port), client_pp(client_pp) {}
 
 GoTrue::~GoTrue() {
     // TODO: sign out

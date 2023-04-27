@@ -42,14 +42,14 @@ class GoTrue {
     String useAccessToken();
 
     // Test
-    bool checkAuthStatus() { return this->is_signed_in; }
-    String checkAccessToken() { return this->access_token; }
-    String checkRefreshToken() { return this->refresh_token; }
+    bool checkAuthStatus() const { return this->is_signed_in; }
+    String checkAccessToken() const { return this->access_token; }
+    String checkRefreshToken() const { return this->refresh_token; }
 
     // Result
-    bool checkError() { return this->error; }
-    String checkErrorMessage() { return this->error_message; }
-    // String checkResult() { return this->response.checkMessageBody(); }
+    bool checkError() const { return this->error; }
+    String checkErrorMessage() const { return this->error_message; }
+    // String checkResult() const { return this->response.checkMessageBody(); }
 };
 
 #endif

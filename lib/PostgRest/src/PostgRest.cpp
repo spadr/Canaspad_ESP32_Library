@@ -1,11 +1,8 @@
 #include "PostgRest.h"
 
 
-PostgRest::PostgRest(HttpClient** client_pp, const char* path, const int port) {
-    this->backend_path = path;
-    this->backend_port = port;
-    this->client_pp = client_pp;
-}
+PostgRest::PostgRest(HttpClient** client_pp, const char* path, const int port)
+    : backend_path(path), backend_port(port), client_pp(client_pp) {}
 
 
 PostgRest::~PostgRest() {}
@@ -270,6 +267,7 @@ PostgRest& PostgRest::limit(int limit, int offset) {
 
 PostgRest& PostgRest::execute() {
     HttpClient& client = **client_pp;
+    client.setPort(this->backend_port);
     client.addHeader("Host", String(this->backend_host));
     client.addHeader("User-Agent", "Canaspad_ESP32_Library/0.3");
     client.addHeader("Content-Type", "application/json");
@@ -290,7 +288,7 @@ PostgRest& PostgRest::execute() {
         }
 
         int status_code = this->result.status_code;
-        if (status_code == 200 || status_code == 201) {
+        if (status_code >= 200 && status_code < 300) {
             this->error = false;
             this->error_message = "";
             return *this;

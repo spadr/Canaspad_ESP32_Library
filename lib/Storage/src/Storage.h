@@ -61,10 +61,10 @@ class Storage {
 
     Storage& execute();
 
-    bool checkError() { return this->error; }
-    String checkErrorMessage() { return this->error_message; }
-    String checkResult() { return this->result.message_body; }
-    String checkPath() {
+    bool checkError() const { return this->error; }
+    String checkErrorMessage() const { return this->error_message; }
+    String checkResult() const { return this->result.message_body; }
+    String checkPath() const {
         HttpClient& http_client = **client_pp;
         return http_client.checkHost() + String(this->backend_path);
     }

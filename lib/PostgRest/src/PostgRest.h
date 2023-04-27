@@ -70,9 +70,9 @@ class PostgRest {
     PostgRest& execute();
 
     // Result
-    bool checkError() { return this->error; }
-    String checkErrorMessage() { return this->error_message; }
-    String checkResult() { return this->result.message_body; }
+    bool checkError() const { return this->error; }
+    String checkErrorMessage() const { return this->error_message; }
+    String checkResult() const { return this->result.message_body; }
 };
 
 #endif

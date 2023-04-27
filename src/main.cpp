@@ -1,5 +1,5 @@
-#include "Config.h"
-// #include "ConfigExample.h"
+// #include "Config.h"
+#include "ConfigExample.h"
 #include "camera_pins.h"
 #include "esp_camera.h"
 #include <Canaspad.h>
@@ -86,11 +86,6 @@ void setup() {
     esp_err_t err = esp_camera_init(&config);
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x", err);
-    }
-
-    while (1) {
-        Serial.println("stop");
-        delay(1000);
     }
 }
 
